@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect
+from flask import Flask, url_for, request, redirect, Response
 import datetime
 app = Flask(__name__)
 
@@ -34,16 +34,33 @@ def author():
 def image():
     path = url_for('static', filename='oak.jpg')
     css = url_for('static', filename='lab1.css')
-    return '''<!doctype html>
+
+    html = f'''<!doctype html>
         <html>
             <head>
                 <link rel="stylesheet" href="''' + css + '''">
+                <meta charset="utf-8">
+                <link rel="stylesheet" href="{css}">
+                <title>Дуб</title>
             </head>
-           <body>
-               <h1>Дуб</h1>
-               <img src="''' + path + '''">
-           </body>
+            <body>
+                <h1>Дуб</h1>
+                <img src="{path}">
+            </body>
         </html>'''
+
+
+    # создаём объект ответа
+    response = Response(html)
+
+    # стандартный заголовок Content-Language
+    response.headers['Content-Language'] = 'ru'
+
+    # два произвольных (нестандартных) заголовка
+    response.headers['X-Developer'] = 'Grudev Alex'
+    response.headers['X-Lab-Work'] = 'Lab1'
+
+    return response
 
 count = 0
 
@@ -185,6 +202,26 @@ def lab1():
                     веб-приложений, сознательно предоставляющих лишь самые базовые возможности.
                 </p>
                 <a href="/">Корень сайта</a>
+                                <h2>Список роутов</h2>
+                <ul>
+                    <li><a href="/">Главное меню</a></li>
+                    <li><a href="/index">Главное меню</a></li>
+                    <li><a href="/lab1">Первая лабораторная</a></li>
+                    <li><a href="/lab1/web">Страница с кодом html</a></li>
+                    <li><a href="/lab1/author">Автор</a></li>
+                    <li><a href="/lab1/image">Страница с картинкой</a></li>
+                    <li><a href="/lab1/counter">Счётчик</a></li>
+                    <li><a href="/lab1/cleencounter">Очистка счётчика</a></li>
+                    <li><a href="/lab1/info">Info (redirect)</a></li>
+                    <li><a href="/lab1/created">Создано (201)</a></li>
+                    <li><a href="/400">Ошибка 400</a></li>
+                    <li><a href="/401">Ошибка 401</a></li>
+                    <li><a href="/402">Ошибка 402</a></li>
+                    <li><a href="/403">Ошибка 403</a></li>
+                    <li><a href="/405">Ошибка 405</a></li>
+                    <li><a href="/418">Ошибка 418</a></li>
+                    <li><a href="/error">Искусственная ошибка (500) (/error)</a></li>
+                </ul>
             </body>
         </html>'''
 
