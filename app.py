@@ -96,4 +96,28 @@ def created():
 
 @app.errorhandler(404)
 def not_found(err):
-    return 'нет такой страницы', 404
+        return 'нет такой страницы', 404
+
+
+@app.route('/')
+@app.route('/index')
+def index():
+    return '''<!doctype html>
+        <html>
+            <head>
+                <title>НГТУ, ФБ, Лабораторные работы</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+                </header>
+                <ul>
+                    <li><a href="/lab1">Первая лабораторная</a></li>
+                </ul>
+                <hr>
+                <footer>
+                    Самойлов Дмитрий Алексеевич, ФБИ-32, 3 курс, 2025
+                </footer>
+            </body>
+        </html>'''
