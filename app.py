@@ -141,3 +141,27 @@ def lab1():
                 <a href="/">Корень сайта</a>
             </body>
         </html>'''
+
+@app.route('/400')
+def error400():
+    return "<h1>400 Bad Request</h1><p>Запрос не может быть понят сервером из-за некорректного синтаксиса.</p>", 400
+
+@app.route('/401')
+def error401():
+    return "<h1>401 Unauthorized</h1><p>Для доступа требуется аутентификация.</p>", 401
+
+@app.route('/402')
+def error402():
+    return "<h1>402 Payment Required</h1><p>Необходима оплата для продолжения.</p>", 402
+
+@app.route('/403')
+def error403():
+    return "<h1>403 Forbidden</h1><p>У вас нет прав для доступа к этому ресурсу.</p>", 403
+
+@app.route('/405')
+def error405():
+    return "<h1>405 Method Not Allowed</h1><p>Метод запроса не поддерживается для данного ресурса.</p>", 405
+
+@app.route('/418')
+def error418():
+    return "<h1>418 I'm a teapot</h1><p>Я — чайник. Сервер отказывается заваривать кофе в чайнике.</p>", 418
