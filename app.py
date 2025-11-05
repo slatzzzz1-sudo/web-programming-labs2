@@ -111,8 +111,8 @@ def created():
            </body>
         </html>''', 201
 
-@app.errorhandler(404)
-def not_found(err):
+@app.route('/404')
+def error404():
         dog = url_for('static', filename='404.jpg')
         return '''<!doctype html>
         <html>
@@ -218,6 +218,7 @@ def lab1():
                     <li><a href="/401">Ошибка 401</a></li>
                     <li><a href="/402">Ошибка 402</a></li>
                     <li><a href="/403">Ошибка 403</a></li>
+                    <li><a href="/404">Ошибка 404</a></li>
                     <li><a href="/405">Ошибка 405</a></li>
                     <li><a href="/418">Ошибка 418</a></li>
                     <li><a href="/error">Искусственная ошибка (500) (/error)</a></li>
@@ -304,3 +305,74 @@ def internal_error(err):
             </body>
         </html>
         ''', 500
+
+
+# Журнал посещений
+access_log = []
+
+@app.errorhandler(404)
+def not_found(err):
+    ip = request.remote_addr
+    date = datetime.datetime.now()
+    url = request.url
+
+    # Добавляем запись в журнал
+    access_log.append(f"[{date}] пользователь {ip} зашел на адрес: {url}")
+
+    # Создаём HTML для журнала
+    log_html = "<ul>"
+    for entry in access_log:
+        log_html += f"<li>{entry}</li>"
+    log_html += "</ul>"
+
+    return f'''<!doctype html>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <title>404 — Страница не найдена</title>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    background: #f0f8ff;
+                    color: #333;
+                    text-align: center;
+                    padding: 40px;
+                }}
+                h1 {{
+                    font-size: 48px;
+                    color: #d9534f;
+                    margin-bottom: 20px;
+                }}
+                p {{
+                    font-size: 20px;
+                    margin-bottom: 20px;
+                }}
+                a {{
+                    color: #0275d8;
+                    text-decoration: none;
+                    font-weight: bold;
+                }}
+                a:hover {{
+                    text-decoration: underline;
+                }}
+                ul {{
+                    text-align: left;
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding-left: 20px;
+                }}
+                li {{
+                    margin-bottom: 5px;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>404 — Страница не найдена</h1>
+            <p>Ваш IP: {ip}<br>
+            Дата: {date}<br>
+            <a href="/">Вернуться на главную</a></p>
+            <h2>Журнал посещений</h2>
+            {log_html}
+        </body>
+    </html>
+    ''', 404
