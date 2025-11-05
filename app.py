@@ -211,3 +211,59 @@ def error405():
 @app.route('/418')
 def error418():
     return "<h1>418 I'm a teapot</h1><p>Я — чайник. Сервер отказывается заваривать кофе в чайнике.</p>", 418
+
+    return "<h1>418 I'm a teapot</h1><p>Я — чайник. Сервер отказывается заваривать кофе в чайнике.</p>", 418
+
+
+@app.route('/error')
+def error():
+    return 1 / 0
+
+@app.errorhandler(500)
+def internal_error(err):
+    e500 = url_for('static', filename='500.webp')
+    return '''<!doctype html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Ошибка 500 — Внутренняя ошибка сервера</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background: #fff5f5;
+                        color: #333;
+                        text-align: center;
+                        padding: 60px;
+                    }
+                    h1 {
+                        font-size: 42px;
+                        color: #c00;
+                    }
+                    p {
+                        font-size: 20px;
+                        margin: 20px 0;
+                    }
+                    a {
+                        color: #0066cc;
+                        text-decoration: none;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                    img {
+                        hieght: 500px;
+                        width: 500px;
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>500 — Упс! Что-то пошло не так...</h1>
+                <p>
+                    На сервере произошла внутренняя ошибка.<br>
+                    Пожалуйста, попробуйте позже или вернитесь <a href="/">на главную</a>.
+                </p>
+                <img src="''' + e500 + '''" alt="500 error cat">
+            </body>
+        </html>
+        ''', 500
