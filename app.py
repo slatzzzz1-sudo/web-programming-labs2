@@ -96,7 +96,53 @@ def created():
 
 @app.errorhandler(404)
 def not_found(err):
-        return 'нет такой страницы', 404
+        dog = url_for('static', filename='404.jpg')
+        return '''<!doctype html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Страница не найдена</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background: #f9fafc;
+                        color: #333;
+                        text-align: center;
+                        padding: 50px;
+                    }
+                    h1 {
+                        font-size: 48px;
+                        margin-bottom: 20px;
+                        color: #d9534f;
+                    }
+                    p {
+                        font-size: 20px;
+                        margin-bottom: 30px;
+                    }
+                    a {
+                        color: #0275d8;
+                        text-decoration: none;
+                        font-weight: bold;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                    img {
+                        width: 250px;
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>404 — Ой! Страница потерялась...</h1>
+                <p>Похоже, такой страницы у нас нет.<br>
+                Но вы всегда можете вернуться <a href="/">на главную</a>.
+                </p>
+                <br>
+                <img src="''' + dog + '''" alt="404 dog">
+            </body>
+        </html>
+        ''', 404
 
 
 @app.route('/')
