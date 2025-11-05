@@ -2,7 +2,7 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
-@app.route("/web")
+@app.route("/lab1/web")
 def web():
     return """<!doctype html>
 <html>
@@ -15,7 +15,7 @@ def web():
     "Content-Type": "text/html; charset=utf-8"
 }
 
-@app.route('/author')
+@app.route('/lab1/image')
 def author():
     name = 'Самойлов Дмитрий Алекссевич'
     group = 'ФБИ-32'
@@ -30,7 +30,7 @@ def author():
            </body>
         </html>'''
 
-@app.route('/image')
+@app.route('/lab1/counter')
 def image():
     path = url_for('static', filename='oak.jpg')
     css = url_for('static', filename='lab1.css')
@@ -58,7 +58,7 @@ def counter():
         <html>
            <body>
                 Сколько раз вы сюда заходили: ''' + str(count) + '''<br>
-               <a href="/cleencounter">Очистка счётчика</a>
+               <a href="/lab1/cleencounter">Очистка счётчика</a>
                <hr>
                Дата и время: ''' + str(time) + '''<br>
                Запрошенный адрес: ''' + url + '''<br>
@@ -66,7 +66,7 @@ def counter():
            </body>
         </html>'''
 
-@app.route('/cleencounter')
+@app.route('/lab1/cleencounter')
 def cleencounter():
     global count
     count = 0
@@ -75,14 +75,14 @@ def cleencounter():
            <body>
                Счётчик очищен! <br>
                Сколько раз вы сюда заходили: ''' + str(count) + '''<br>
-               <a href="/counter">Вернуться на счётчик</a>
+               <a href="/lab1/counter">Вернуться на счётчик</a>
            </body>
         </html>'''
 
 
-@app.route('/info')
+@app.route('/lab1/info')
 def info():
-    return redirect('/author')
+    return redirect('/lab1/author')
 
 @app.route('/lab1/created')
 def created():
