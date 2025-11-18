@@ -113,53 +113,53 @@ def created():
 
 @app.route('/404')
 def error404():
-        dog = url_for('static', filename='404.jpg')
-        return '''<!doctype html>
-        <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Страница не найдена</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        background: #f9fafc;
-                        color: #333;
-                        text-align: center;
-                        padding: 50px;
-                    }
-                    h1 {
-                        font-size: 48px;
-                        margin-bottom: 20px;
-                        color: #d9534f;
-                    }
-                    p {
-                        font-size: 20px;
-                        margin-bottom: 30px;
-                    }
-                    a {
-                        color: #0275d8;
-                        text-decoration: none;
-                        font-weight: bold;
-                    }
-                    a:hover {
-                        text-decoration: underline;
-                    }
-                    img {
-                        width: 250px;
-                        margin-top: 20px;
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>404 — Ой! Страница потерялась...</h1>
-                <p>Похоже, такой страницы у нас нет.<br>
-                Но вы всегда можете вернуться <a href="/">на главную</a>.
-                </p>
-                <br>
-                <img src="''' + dog + '''" alt="404 dog">
-            </body>
-        </html>
-        ''', 404
+    dog = url_for('static', filename='404.jpg')
+    return '''<!doctype html>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Страница не найдена</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background: #f9fafc;
+                    color: #333;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 {
+                    font-size: 48px;
+                    margin-bottom: 20px;
+                    color: #d9534f;
+                }
+                p {
+                    font-size: 20px;
+                    margin-bottom: 30px;
+                }
+                a {
+                    color: #0275d8;
+                    text-decoration: none;
+                    font-weight: bold;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+                img {
+                    width: 250px;
+                    margin-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>404 — Ой! Страница потерялась...</h1>
+            <p>Похоже, такой страницы у нас нет.<br>
+               Но вы всегда можете вернуться <a href="/">на главную</a>.
+            </p>
+            <br>
+            <img src="''' + dog + '''" alt="404 dog">
+        </body>
+    </html>
+    ''', 404
 
 
 @app.route('/')
@@ -225,6 +225,8 @@ def lab1():
                 </ul>
             </body>
         </html>'''
+
+
 
 @app.route('/400')
 def error400():
@@ -386,25 +388,101 @@ def a2():
     return 'со слэшем'
 
 
-flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
 
-@app.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    if flower_id >= len(flower_list):
-        abort(404)
-    else:
-        return "цветок: " + flower_list[flower_id]
-        
+flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
+access_log = []
+
+# Сначала маршрут С параметром
 @app.route('/lab2/add_flower/<name>')
 def add_flower(name):
     flower_list.append(name)
     return f'''<!doctype html>
     <html>
+        <head>
+            <title>Цветок добавлен</title>
+            <meta charset="utf-8">
+        </head>
         <body>
             <h1>Добавлен новый цветок</h1>
-            <p>Название нового цветка: {name} </p>
+            <p>Название нового цветка: {name}</p>
             <p>Всего цветов: {len(flower_list)}</p>
-            <p>Полный список: {flower_list}</p>
+            <p>Полный список: {", ".join(flower_list)}</p>
+            <p><a href="/lab2/all_flowers/">Посмотреть все цветы</a></p>
+        </body>
+    </html>'''
+
+# Потом маршрут БЕЗ параметра (должен быть вторым!)
+@app.route('/lab2/add_flower')
+@app.route('/lab2/add_flower/')
+def no_flower():
+    return '''<!doctype html>
+    <html>
+        <head>
+            <title>Ошибка</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>400 Bad Request</h1>
+            <p>Вы не задали имя цветка.</p>
+            <p><a href="/lab2/all_flowers/">Посмотреть все цветы</a></p>
+        </body>
+    </html>''', 400
+
+# Остальные ваши маршруты...
+@app.route('/lab2/flowers/<int:flower_id>')
+def flowers(flower_id):
+    if flower_id < 0 or flower_id >= len(flower_list):
+        abort(404)
+    else:
+        flower_name = flower_list[flower_id]
+        return f"""<!doctype html>
+        <html>
+            <head>
+                <title>Цветок {flower_id}</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                <h1>Цветок: {flower_name}</h1>
+                <p>ID цветка: {flower_id}</p>
+                <p>
+                    <a href="/lab2/all_flowers/">Посмотреть все цветы</a>
+                </p>
+            </body>
+        </html>
+        """
+
+@app.route('/lab2/all_flowers/')
+def all_flowers():
+    return f'''<!doctype html>
+    <html>
+        <head>
+            <title>Все цветы</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>Информация о цветах</h1>
+            <h2>Список всех цветов:</h2>
+            <ul>
+                {"".join([f'<li>{flower} (ID: {idx})</li>' for idx, flower in enumerate(flower_list)])}
+            </ul>
+            <p><strong>Общее количество:</strong> {len(flower_list)}</p>
+            <p><a href="/lab2/clear_flowers/">Очистить список</a></p>
+        </body>
+    </html>'''
+
+@app.route('/lab2/clear_flowers/')
+def clear_flowers():
+    flower_list.clear()
+    return '''<!doctype html>
+    <html>
+        <head>
+            <title>Список очищен</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>Список цветов очищен</h1>
+            <p>Все цветы были удалены из списка.</p>
+            <p><a href="/lab2/all_flowers/">Вернуться к списку цветов</a></p>
         </body>
     </html>'''
 
@@ -416,11 +494,11 @@ def example():
     group = 'ФБИ-32'
     course = '3 курс'
     fruits = [
-        {'name':'яблоки', 'price':100},
-        {'name':'груши', 'price':120},
-        {'name':'апельсины', 'price':80},
-        {'name':'мандарины', 'price':95},
-        {'name':'манго', 'price':321},
+        {'name': 'яблоки', 'price': 100},
+        {'name': 'груши', 'price': 120},
+        {'name': 'апельсины', 'price': 80},
+        {'name': 'мандарины', 'price': 95},
+        {'name': 'манго', 'price': 321},
         ]
     return render_template('example.html', name=name, 
                             lab_number=lab_number, group=group, 
@@ -433,5 +511,22 @@ def lab2():
 @app.route('/lab2/filters')
 def filters():
     phrase = '0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных...'
-    return render_template('filter.html', phrase = phrase)
+    return render_template('filter.html', phrase=phrase)
 
+
+@app.route('/lab2/calc/<int:num1>/<int:num2>')
+def calc(num1, num2):
+    return f'''<h1>Расчёт с параметрами:</h1>
+    <p>{num1} + {num2} = {num1 + num2}<br>
+    {num1} - {num2} = {num1 + num2}<br>
+    {num1} x {num2} = {num1 * num2}<br>
+    {num1}/{num2} = {num1/num2}<br>
+    {num1}<sup>{num2}</sup> = {num1**num2}</p>'''
+
+@app.route('/lab2/calc/')
+def calc1():
+    return redirect(url_for('calc', num1=1, num2=1))
+
+@app.route('/lab2/calc/<int:num1>')
+def calc_with_one(num1):
+    return redirect(url_for('calc', num1=num1, num2=1))
