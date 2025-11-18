@@ -57,7 +57,7 @@ def image():
     response.headers['Content-Language'] = 'ru'
 
     # два произвольных (нестандартных) заголовка
-    response.headers['X-Developer'] = 'Grudev Alex'
+    response.headers['X-Developer'] = 'Samoylov Dima'
     response.headers['X-Lab-Work'] = 'Lab1'
 
     return response
@@ -176,7 +176,8 @@ def index():
                     НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
                 </header>
                 <ul>
-                    <li><a href="/lab1">Первая лабораторная</a></li>
+                    <li><a href="/lab1">Лабораторная работа 1</a></li>
+                    <li><a href="/lab2">Лабораторная работа 2</a></li>
                 </ul>
                 <hr>
                 <footer>
