@@ -1,17 +1,29 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #fafafa;
-    margin: 5;
+    margin: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+main {
+    margin-bottom: 60px;
     padding: 20px;
+    background: #f0f8ff;
 }
-  
-h1 {
-    color: #333;
+
+header {
+    margin-bottom: 40px;
+    padding: 25px;
+    background: #a0a0f3;
+    border-bottom: 3px solid #9370db;
 }
-  
-img {
-    width: 400px;       /* ширина картинки */
-    height: auto;       /* высота подстраивается */
-    border-radius: 2%; /* лёгкое скругление */
-    box-shadow: 0 4px 12px rgb(110, 200, 228);
+
+footer {
+    margin-top: 30px;
+    padding: 15px;
+    background: #f1a5f1;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-weight: bold;
 }
