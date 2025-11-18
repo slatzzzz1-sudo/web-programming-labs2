@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Список книг</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+            margin: 20px; 
+        }
+        h1 { 
+            margin-bottom: 10px; 
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+        }
+        th, td { 
+            border: 1px solid #000000; 
+            padding: 8px 10px; 
+            text-align: left; 
+        }
+        th { 
+            background: #6f2799; 
+        }
+        .count { 
+            color: #ccec14; 
+            font-size: 0.95em; 
+            margin-bottom: 16px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Список книг</h1>
+    <div class="count">Всего: {{ books|length }}</div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Автор</th>
+            <th>Название</th>
+            <th>Жанр</th>
+            <th>Страниц</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for b in books %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ b.author }}</td>
+            <td>{{ b.title }}</td>
+            <td>{{ b.genre }}</td>
+            <td>{{ b.pages }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

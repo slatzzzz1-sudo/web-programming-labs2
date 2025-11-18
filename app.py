@@ -530,3 +530,20 @@ def calc1():
 @app.route('/lab2/calc/<int:num1>')
 def calc_with_one(num1):
     return redirect(url_for('calc', num1=num1, num2=1))
+
+@app.route('/lab2/books/')
+def books():
+    books_data = [
+    {"author": "Айн Рэнд", "title": "Атлант расправил плечи", "genre": "Философский роман", "pages": 1168},
+    {"author": "Стивен Кинг", "title": "Оно", "genre": "Ужасы", "pages": 1245},
+    {"author": "Фёдор Достоевский", "title": "Преступление и наказание", "genre": "Роман", "pages": 574},
+    {"author": "Джек Лондон", "title": "Белый Клык", "genre": "Приключения", "pages": 284},
+    {"author": "Эрих Мария Ремарк", "title": "Три товарища", "genre": "Роман", "pages": 480},
+    {"author": "Айзек Азимов", "title": "Я, робот", "genre": "Научная фантастика", "pages": 320},
+    {"author": "Джон Р.Р. Толкин", "title": "Властелин Колец", "genre": "Фэнтези", "pages": 1137},
+    {"author": "Жюль Верн", "title": "Двадцать тысяч лье под водой", "genre": "Приключения", "pages": 432},
+    {"author": "Агата Кристи", "title": "Убийство в Восточном экспрессе", "genre": "Детектив", "pages": 316},
+    {"author": "Пауло Коэльо", "title": "Алхимик", "genre": "Роман", "pages": 256},
+    {"author": "Клайв С. Льюис", "title": "Хроники Нарнии", "genre": "Фэнтези", "pages": 768}
+]
+    return render_template('books.html', books=books_data)
