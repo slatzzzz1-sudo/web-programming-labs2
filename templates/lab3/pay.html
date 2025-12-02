@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <style>
+        .box {
+            max-width:640px;
+            margin:20px auto;
+            padding:16px;
+            border:1px solid #eee;
+            border-radius:12px
+        }
+        .title {
+            margin:0 0 12px
+        }
+        .hint {
+            margin:6px 0 14px;
+            color:#64748b
+        }
+        .sum {
+            padding:10px 12px;
+            border:1px dashed #dfe3ea;
+            border-radius:10px;
+            margin-bottom:12px;
+            background:#f9fbff
+        }
+        .field {
+            margin:10px 0 6px;
+            font-weight:600
+        }
+        .input {
+            width:100%;
+            padding:8px 10px;
+            border:1px solid #e5e7eb;
+            border-radius:8px
+        }
+        .actions {margin-top:14px;
+            display:flex;
+            gap:10px;
+            align-items:center
+        }
+        .btn {
+            padding:8px 14px;
+            border:0;
+            border-radius:8px;
+            background:#10b981;
+            color:#fff;
+            cursor:pointer
+        }
+        .btn:hover {
+            filter:brightness(1.05)
+        }
+        a {
+            color:#2563eb;
+            text-decoration:none
+        }
+    </style>
+
+<div class="box">
+    <h1 class="title">Оплата</h1>
+
+    <div class="hint">
+        Стоимость напитков и добавок: кофе — 120 ₽, чёрный чай — 80 ₽, зелёный чай — 70 ₽;
+        молоко +30 ₽, сахар +10 ₽.
+    </div>
+
+    <div class="sum"><b>Сумма к оплате:</b> {{ price }} ₽</div>
+
+    <form action="{{ url_for('lab3.success') }}" method="post" autocomplete="off" novalidate>
+        <input type="hidden" name="price" value="{{ price }}">
+
+        <div class="field">Номер банковской карты:</div>
+        <input class="input" type="text" name="card" pattern="\d{16}">
+
+        <div class="field">Имя держателя карты:</div>
+        <input class="input" type="text" name="name" placeholder="IVAN IVANOV">
+
+        <div class="field">Номер CVV:</div>
+        <input class="input" type="text" name="cvv" size="3" pattern="\d{3}" maxlength="3">
+
+        <div class="actions">
+            <button type="submit" class="btn">Оплатить {{ price }} ₽</button>
+            <a href="/lab3/order">Изменить заказ</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

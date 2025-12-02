@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+<style>
+    .box {
+        max-width: 640px;
+        margin: 30px auto;
+        padding: 28px;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #ffffff;
+        text-align: center;
+    }
+    
+    .title {
+        margin: 0 0 12px;
+        font-size: 26px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .subtitle {
+        margin: 0 0 24px;
+        font-size: 16px;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+    
+    .muted {
+        color: #64748b;
+        font-size: 14px;
+    }
+    
+    .highlight {
+        color: #111827;
+        font-weight: 500;
+    }
+    
+    a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    a:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+    
+    .divider {
+        margin: 24px 0;
+        height: 1px;
+        background: #f3f4f6;
+        border: none;
+    }
+    
+    .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 28px;
+        background: #2563eb;
+        color: white;
+        border-radius: 10px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    
+    .button:hover {
+        background: #1d4ed8;
+        text-decoration: none;
+    }
+</style>
+
+    <div class="box">
+        <h1 class="title">Спасибо!</h1>
+        <p>Ваш заказ оплачен на сумму <b>{{ price }} ₽</b>, ожидайте доставку.</p>
+        <p class="muted">Если нужно, можно оформить ещё один заказ.</p>
+        <p><a href="/lab3/order">Сделать еще один заказ</a></p>
+    </div>
+{% endblock %}
