@@ -1,257 +1,36 @@
 from flask import Flask, url_for, request, redirect, Response, abort, render_template
 import datetime
+from lab1 import lab1
+from lab2 import lab2
+
 
 app = Flask(__name__)
+app.register_blueprint(lab1)
+app.register_blueprint(lab2)
 
-# -------------------- LAB1 WEB --------------------
-@app.route("/lab1/web")
-def web():
-    return """<!doctype html>
-<html>
-<body>
-<h1>web-cepsep на flask</h1>
-<a href="/lab1/author">author</a>
-</body>
-</html>""", 200, {
-        "X-Server": "sample",
-        "Content-Type": "text/html; charset=utf-8"
-    }
-
-
-# -------------------- LAB1 AUTHOR --------------------
-@app.route('/lab1/author')
-def author():
-    name = 'Самойлов Дмитрий Алекссевич'
-    group = 'ФБИ-32'
-    faculty = 'ФБ'
-    return f'''<!doctype html>
-<html>
-   <body>
-       <p>Студент: {name}</p>
-       <p>Группа: {group}</p>
-       <p>Факультет: {faculty}</p>
-       <a href="/lab1/web">web</a>
-   </body>
-</html>'''
-
-
-# -------------------- LAB1 IMAGE --------------------
-@app.route('/lab1/image')
-def image():
-    path = url_for('static', filename='oak.jpg')
-    css = url_for('static', filename='lab1.css')
-
-    html = f'''<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="{css}">
-        <title>Дуб</title>
-    </head>
-    <body>
-        <h1>Дуб</h1>
-        <img src="{path}">
-    </body>
-</html>'''
-
-    response = Response(html)
-    response.headers['Content-Language'] = 'ru'
-    response.headers['X-Developer'] = 'Samoylov Dima'
-    response.headers['X-Lab-Work'] = 'Lab1'
-    return response
-
-
-# -------------------- COUNTER --------------------
-count = 0
-
-@app.route('/lab1/counter')
-def counter():
-    global count
-    count += 1
-    time = datetime.datetime.today()
-    url = request.url
-    client_ip = request.remote_addr
-    return f'''<!doctype html>
-<html>
-   <body>
-        Сколько раз вы сюда заходили: {count}<br>
-       <a href="/lab1/cleencounter">Очистка счётчика</a>
-       <hr>
-       Дата и время: {time}<br>
-       Запрошенный адрес: {url}<br>
-       Ваш IP-адрес: {client_ip}<br>
-   </body>
-</html>'''
-
-
-@app.route('/lab1/cleencounter')
-def cleencounter():
-    global count
-    count = 0
-    return f'''<!doctype html>
-<html>
-   <body>
-       Счётчик очищен! <br>
-       Сколько раз вы сюда заходили: {count}<br>
-       <a href="/lab1/counter">Вернуться на счётчик</a>
-   </body>
-</html>'''
-
-
-# -------------------- INFO REDIRECT --------------------
-@app.route('/lab1/info')
-def info():
-    return redirect('/lab1/author')
-
-
-# -------------------- CREATED 201 --------------------
-@app.route('/lab1/created')
-def created():
-    return '''<!doctype html>
-<html>
-   <body>
-       <h1>Создано успешно</h1>
-       <div><i>что-то создано...</i></div>
-   </body>
-</html>''', 201
-
-
-# -------------------- 404 CUSTOM --------------------
-@app.route('/404')
-def error404():
-    dog = url_for('static', filename='404.jpg')
-    return f'''<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Страница не найдена</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background: #f9fafc;
-                color: #333;
-                text-align: center;
-                padding: 50px;
-            }}
-            h1 {{
-                font-size: 48px;
-                margin-bottom: 20px;
-                color: #d9534f;
-            }}
-            p {{
-                font-size: 20px;
-                margin-bottom: 30px;
-            }}
-            a {{
-                color: #0275d8;
-                text-decoration: none;
-                font-weight: bold;
-            }}
-            a:hover {{
-                text-decoration: underline;
-            }}
-            img {{
-                width: 250px;
-                margin-top: 20px;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>404 — Ой! Страница потерялась...</h1>
-        <p>Похоже, такой страницы у нас нет.<br>
-           Но вы всегда можете вернуться <a href="/">на главную</a>.
-        </p>
-        <br>
-        <img src="{dog}" alt="404 dog">
-    </body>
-</html>
-''', 404
-
-
-# -------------------- INDEX --------------------
 @app.route('/')
 @app.route('/index')
 def index():
     return '''<!doctype html>
-<html>
-    <head>
-        <title>НГТУ, ФБ, Лабораторные работы</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <header>
-            НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
-        </header>
-        <ul>
-            <li><a href="/lab1">Лабораторная работа 1</a></li>
-            <li><a href="/lab2">Лабораторная работа 2</a></li>
-        </ul>
-        <hr>
-        <footer>
-            Самойлов Дмитрий Алексеевич, ФБИ-32, 3 курс, 2025
-        </footer>
-    </body>
-</html>'''
-
-
-# -------------------- LAB1 MENU --------------------
-@app.route('/lab1')
-def lab1():
-    return '''<!doctype html>
-<html>
-    <head>
-        <title>Лабораторная 1</title>
-    </head>
-    <body>
-        <p>
-            Flask — фреймворк для создания веб-приложений на языке Python.
-        </p>
-        <a href="/">Корень сайта</a>
-        <h2>Список роутов</h2>
-        <ul>
-            <li><a href="/">Главное меню</a></li>
-            <li><a href="/lab1/web">Страница с HTML</a></li>
-            <li><a href="/lab1/author">Автор</a></li>
-            <li><a href="/lab1/image">Страница с картинкой</a></li>
-            <li><a href="/lab1/counter">Счётчик</a></li>
-            <li><a href="/lab1/cleencounter">Очистка счётчика</a></li>
-            <li><a href="/lab1/info">Info (redirect)</a></li>
-            <li><a href="/lab1/created">Создано (201)</a></li>
-            <li><a href="/404">Ошибка 404</a></li>
-        </ul>
-    </body>
-</html>'''
-
-@app.route('/400')
-def error400():
-    return "<h1>400 Bad Request</h1><p>Запрос не может быть понят сервером из-за некорректного синтаксиса.</p>", 400
-
-@app.route('/401')
-def error401():
-    return "<h1>401 Unauthorized</h1><p>Для доступа требуется аутентификация.</p>", 401
-
-@app.route('/402')
-def error402():
-    return "<h1>402 Payment Required</h1><p>Необходима оплата для продолжения.</p>", 402
-
-@app.route('/403')
-def error403():
-    return "<h1>403 Forbidden</h1><p>У вас нет прав для доступа к этому ресурсу.</p>", 403
-
-@app.route('/405')
-def error405():
-    return "<h1>405 Method Not Allowed</h1><p>Метод запроса не поддерживается для данного ресурса.</p>", 405
-
-@app.route('/418')
-def error418():
-    return "<h1>418 I'm a teapot</h1><p>Я — чайник. Сервер отказывается заваривать кофе в чайнике.</p>", 418
-
-    return "<h1>418 I'm a teapot</h1><p>Я — чайник. Сервер отказывается заваривать кофе в чайнике.</p>", 418
-
-
-@app.route('/error')
-def error():
-    return 1 / 0
+        <html>
+            <head>
+                <title>НГТУ, ФБ, Лабораторные работы</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+                </header>
+                <ul>
+                    <li><a href="/lab1">Лабораторная работа 1</a></li>
+                    <li><a href="/lab2">Лабораторная работа 2</a></li>
+                </ul>
+                <hr>
+                <footer>
+                    Самойлов Дмитрий Алексеевич, ФБИ-32, 3 курс, 2025
+                </footer>
+            </body>
+        </html>'''
 
 @app.errorhandler(500)
 def internal_error(err):
@@ -297,7 +76,7 @@ def internal_error(err):
                     На сервере произошла внутренняя ошибка.<br>
                     Пожалуйста, попробуйте позже или вернитесь <a href="/">на главную</a>.
                 </p>
-                <img src="''' + e500 + '''" alt="500 error">
+                <img src="''' + e500 + '''" alt="500 error cat">
             </body>
         </html>
         ''', 500
@@ -371,204 +150,4 @@ def not_found(err):
             {log_html}
         </body>
     </html>
-        ''', 404
-
-@app.route('/lab2/a')
-def a():
-    return 'без слэша'
-
-@app.route('/lab2/a/')
-def a2():
-    return 'со слэшем'
-
-
-
-flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
-access_log = []
-
-# Сначала маршрут С параметром
-@app.route('/lab2/add_flower/<name>')
-def add_flower(name):
-    flower_list.append(name)
-    return f'''<!doctype html>
-    <html>
-        <head>
-            <title>Цветок добавлен</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <h1>Добавлен новый цветок</h1>
-            <p>Название нового цветка: {name}</p>
-            <p>Всего цветов: {len(flower_list)}</p>
-            <p>Полный список: {", ".join(flower_list)}</p>
-            <p><a href="/lab2/all_flowers/">Посмотреть все цветы</a></p>
-        </body>
-    </html>'''
-
-# Потом маршрут БЕЗ параметра (должен быть вторым!)
-@app.route('/lab2/add_flower')
-@app.route('/lab2/add_flower/')
-def no_flower():
-    return '''<!doctype html>
-    <html>
-        <head>
-            <title>Ошибка</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <h1>400 Bad Request</h1>
-            <p>Вы не задали имя цветка.</p>
-            <p><a href="/lab2/all_flowers/">Посмотреть все цветы</a></p>
-        </body>
-    </html>''', 400
-
-# Остальные ваши маршруты...
-@app.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    if flower_id < 0 or flower_id >= len(flower_list):
-        abort(404)
-    else:
-        flower_name = flower_list[flower_id]
-        return f"""<!doctype html>
-        <html>
-            <head>
-                <title>Цветок {flower_id}</title>
-                <meta charset="utf-8">
-            </head>
-            <body>
-                <h1>Цветок: {flower_name}</h1>
-                <p>ID цветка: {flower_id}</p>
-                <p>
-                    <a href="/lab2/all_flowers/">Посмотреть все цветы</a>
-                </p>
-            </body>
-        </html>
-        """
-
-@app.route('/lab2/all_flowers/')
-def all_flowers():
-    return f'''<!doctype html>
-    <html>
-        <head>
-            <title>Все цветы</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <h1>Информация о цветах</h1>
-            <h2>Список всех цветов:</h2>
-            <ul>
-                {"".join([f'<li>{flower} (ID: {idx})</li>' for idx, flower in enumerate(flower_list)])}
-            </ul>
-            <p><strong>Общее количество:</strong> {len(flower_list)}</p>
-            <p><a href="/lab2/clear_flowers/">Очистить список</a></p>
-        </body>
-    </html>'''
-
-@app.route('/lab2/clear_flowers/')
-def clear_flowers():
-    flower_list.clear()
-    return '''<!doctype html>
-    <html>
-        <head>
-            <title>Список очищен</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <h1>Список цветов очищен</h1>
-            <p>Все цветы были удалены из списка.</p>
-            <p><a href="/lab2/all_flowers/">Вернуться к списку цветов</a></p>
-        </body>
-    </html>'''
-
-
-@app.route('/lab2/example')
-def example():
-    name = 'Самойлов Дмитрий'
-    lab_number = 2
-    group = 'ФБИ-32'
-    course = '3 курс'
-    fruits = [
-        {'name': 'яблоки', 'price': 100},
-        {'name': 'груши', 'price': 120},
-        {'name': 'апельсины', 'price': 80},
-        {'name': 'мандарины', 'price': 95},
-        {'name': 'манго', 'price': 321},
-        ]
-    return render_template('example.html', name=name, 
-                            lab_number=lab_number, group=group, 
-                            course=course, fruits=fruits)
-@app.route('/lab2/')
-def lab2():
-    return render_template('lab2.html')
-
-
-@app.route('/lab2/filters')
-def filters():
-    phrase = '0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных...'
-    return render_template('filter.html', phrase=phrase)
-
-
-@app.route('/lab2/calc/<int:num1>/<int:num2>')
-def calc(num1, num2):
-    return f'''<h1>Расчёт с параметрами:</h1>
-    <p>{num1} + {num2} = {num1 + num2}<br>
-    {num1} - {num2} = {num1 + num2}<br>
-    {num1} x {num2} = {num1 * num2}<br>
-    {num1}/{num2} = {num1/num2}<br>
-    {num1}<sup>{num2}</sup> = {num1**num2}</p>'''
-
-@app.route('/lab2/calc/')
-def calc1():
-    return redirect(url_for('calc', num1=1, num2=1))
-
-@app.route('/lab2/calc/<int:num1>')
-def calc_with_one(num1):
-    return redirect(url_for('calc', num1=num1, num2=1))
-
-@app.route('/lab2/books/')
-def books():
-    books_data = [
-    {"author": "Айн Рэнд", "title": "Атлант расправил плечи", "genre": "Философский роман", "pages": 1168},
-    {"author": "Стивен Кинг", "title": "Оно", "genre": "Ужасы", "pages": 1245},
-    {"author": "Фёдор Достоевский", "title": "Преступление и наказание", "genre": "Роман", "pages": 574},
-    {"author": "Джек Лондон", "title": "Белый Клык", "genre": "Приключения", "pages": 284},
-    {"author": "Эрих Мария Ремарк", "title": "Три товарища", "genre": "Роман", "pages": 480},
-    {"author": "Айзек Азимов", "title": "Я, робот", "genre": "Научная фантастика", "pages": 320},
-    {"author": "Джон Р.Р. Толкин", "title": "Властелин Колец", "genre": "Фэнтези", "pages": 1137},
-    {"author": "Жюль Верн", "title": "Двадцать тысяч лье под водой", "genre": "Приключения", "pages": 432},
-    {"author": "Агата Кристи", "title": "Убийство в Восточном экспрессе", "genre": "Детектив", "pages": 316},
-    {"author": "Пауло Коэльо", "title": "Алхимик", "genre": "Роман", "pages": 256},
-    {"author": "Клайв С. Льюис", "title": "Хроники Нарнии", "genre": "Фэнтези", "pages": 768}
-]
-    return render_template('books.html', books=books_data)
-
-
-@app.route('/lab2/gallery/')
-def gallery():
-    dogs = [
-        {"name": "Шарик", "slug": "dog", "desc": "Профессиональный искатель мячиков."},
-        {"name": "Барбос", "slug": "dog2", "desc": "Эксперт по охране дивана."},
-        {"name": "Рекс", "slug": "dog3", "desc": "Специалист по раскапыванию клумб."},
-        {"name": "Дружок", "slug": "dog4", "desc": "Мастер побегов на прогулке."},
-        {"name": "Тузик", "slug": "dog5", "desc": "Критик собачьих лакомств."},
-        {"name": "Лорд", "slug": "dog6", "desc": "Ночной дегустатор корма."},
-        {"name": "Бобик", "slug": "dog7", "desc": "Гуру виляния хвостом."},
-        {"name": "Гром", "slug": "dog8", "desc": "Разрушитель тапочек."},
-        {"name": "Жучка", "slug": "dog9", "desc": "Охотник за мячами."},
-        {"name": "Альма", "slug": "dog10", "desc": "Знаток кошачьего пения."},
-        {"name": "Зевс", "slug": "dog11", "desc": "Сомелье собачьих кормов."},
-        {"name": "Блэк", "slug": "dog12", "desc": "Маскировщик под ночь."},
-        {"name": "Пират", "slug": "dog13", "desc": "Любитель свернуться калачиком."},
-        {"name": "Цезарь", "slug": "dog14", "desc": "Повелитель лежанок."},
-        {"name": "Солнышко", "slug": "dog15", "desc": "Искатель теплых мест у батареи."},
-        {"name": "Боня", "slug": "dog16", "desc": "Профессиональный будильник в 6 утра."},
-        {"name": "Марс", "slug": "dog17", "desc": "Исследователь сумок хозяев."},
-        {"name": "Луна", "slug": "dog18", "desc": "Лунный зайчик в образе собаки."},
-        {"name": "Фил", "slug": "dog19", "desc": "Консультант по утренним пробежкам."},
-        {"name": "Молния", "slug": "dog20", "desc": "Мастер внезапных пробежек."}
-    ]
-    
-    for item in dogs:
-        item["img_url"] = url_for('static',
-                                  filename=f'dogs/{item["slug"]}.jpg')
-    return render_template('gallery.html', items=dogs, title="Собачки")
+    ''', 404
