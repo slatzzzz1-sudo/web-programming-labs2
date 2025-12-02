@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+
+    <style>
+        body { 
+            background:#f3f4f6; 
+            padding:24px; 
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+        }
+        h1 { 
+            text-align:center; 
+            color:#111827; 
+        }
+        .form-card {
+            max-width: 560px; 
+            margin: 0 auto 20px; 
+            background:#fff; 
+            border:1px solid #e5e7eb;
+            border-radius:12px; 
+            padding:16px; 
+            box-shadow:0 2px 8px rgba(0,0,0,.05);
+        }
+        .row {
+            display:grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap:12px;
+            align-items:end;
+        }
+        label { 
+            font-weight:600; 
+            font-size:14px; 
+            color:#374151; 
+            display:block; 
+            margin-bottom:6px; 
+        }
+        input[type="number"] {
+            height:40px;
+            padding:8px 10px;
+            border:1px solid #d1d5db;
+            border-radius:8px;
+            background:#f9fafb;
+            box-sizing:border-box;
+        }
+        .btn {
+            padding:10px 16px; 
+            border:none; 
+            border-radius:8px; 
+            cursor:pointer; 
+            font-weight:600; 
+        }
+        .btn-primary {
+            height: 42px;
+            background:#2563eb; 
+            color:#fff; 
+        }
+        .btn-primary:hover {
+             background:#1e4ed8; 
+            }
+        .btn-reset {
+            background:#ef4444; 
+            color:#fff; 
+            text-decoration:none; 
+            display:inline-block; 
+        }
+        .btn-reset:hover { 
+            background:#dc2626; 
+        }
+        .meta { 
+            max-width: 560px; 
+            margin: 0 auto 12px; 
+            color:#374151; 
+        }
+        .grid {
+            display:grid; 
+            gap:12px; 
+            grid-template-columns: 
+            repeat(auto-fill, minmax(240px, 1fr));
+        }
+        .card {
+            background:#fff; 
+            border:1px solid #e5e7eb; 
+            border-radius:12px; 
+            padding:12px;
+            box-shadow:0 1px 4px rgba(0,0,0,.04);
+        }
+        .title { 
+            font-weight:700; 
+            color:#111827; 
+            margin-bottom:6px; 
+        }
+        .muted { 
+            color:#6b7280; 
+            font-size:14px; 
+        }
+        .empty { 
+            text-align:center; 
+            color:#6b7280; 
+            padding:20px; 
+        }
+    </style>
+
+    <h1>Поиск товаров по цене</h1>
+
+    <div class="form-card">
+        <form method="get" action="{{ url_for('lab3.products_filter') }}">
+            <div class="row">
+                <div>
+                    <label for="min">Мин. цена</label>
+                    <input type="number" id="min" name="min" min="0"
+                    placeholder="{{ glob_min }}" value="{{ cur_min }}">
+                </div>
+                <div>
+                    <label for="max">Макс. цена</label>
+                    <input type="number" id="max" name="max" min="0"
+                    placeholder="{{ glob_max }}" value="{{ cur_max }}">
+                </div>
+                <div style="display:flex; gap:8px; align-items:end;">
+                    <button class="btn btn-primary" type="submit">Искать</button>
+                    <a class="btn btn-reset" href="{{ url_for('lab3.products_filter', action='reset') }}">Сброс</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="meta">
+        {% if message %}
+            <div class="empty">{{ message }}</div>
+        {% else %}
+            Найдено товаров: <b>{{ count }}</b>
+        {% endif %}
+    </div>
+
+    <div class="grid">
+        {% for p in items %}
+            <div class="card">
+            <div class="title">{{ p.name }}</div>
+            <div class="muted">Цена: {{ p.price }} ₽</div>
+            <div class="muted">Бренд: {{ p.brand }}</div>
+            <div class="muted">Цвет: {{ p.color }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

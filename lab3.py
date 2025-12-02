@@ -238,3 +238,125 @@ def ticket_submit():
         price=price,
         breakdown=breakdown
     )
+
+PRODUCTS = [
+    {"name": "Кожаная куртка", "price": 48990, "brand": "Balenciaga", "color": "черный", "category": "Верхняя одежда"},
+    {"name": "Классические джинсы", "price": 25990, "brand": "Levi's", "color": "синий", "category": "Джинсы"},
+    {"name": "Белая футболка", "price": 12990, "brand": "Gucci", "color": "белый", "category": "Футболки"},
+    {"name": "Кожаные кроссовки", "price": 67990, "brand": "Louis Vuitton", "color": "бежевый", "category": "Обувь"},
+    {"name": "Шерстяное пальто", "price": 89990, "brand": "Burberry", "color": "бежевый", "category": "Верхняя одежда"},
+    {"name": "Кожаная сумка", "price": 54990, "brand": "Prada", "color": "черный", "category": "Аксессуары"},
+    {"name": "Классические брюки", "price": 28990, "brand": "Armani", "color": "серый", "category": "Брюки"},
+    {"name": "Джинсовая куртка", "price": 32990, "brand": "Diesel", "color": "синий", "category": "Верхняя одежда"},
+    {"name": "Кожаные ботинки", "price": 78990, "brand": "Dior", "color": "коричневый", "category": "Обувь"},
+    {"name": "Вязаный свитер", "price": 41990, "brand": "Stone Island", "color": "зеленый", "category": "Свитера"},
+    {"name": "Кожаный ремень", "price": 18990, "brand": "Hermès", "color": "черный", "category": "Аксессуары"},
+    {"name": "Джинсы скинни", "price": 23990, "brand": "Calvin Klein", "color": "черный", "category": "Джинсы"},
+    {"name": "Футболка с принтом", "price": 17990, "brand": "Off-White", "color": "белый", "category": "Футболки"},
+    {"name": "Кроссовки", "price": 45990, "brand": "Nike", "color": "белый", "category": "Обувь"},
+    {"name": "Кожаная юбка", "price": 36990, "brand": "Versace", "color": "черный", "category": "Юбки"},
+    {"name": "Хлопковая рубашка", "price": 22990, "brand": "Ralph Lauren", "color": "голубой", "category": "Рубашки"},
+    {"name": "Парка с мехом", "price": 119990, "brand": "Moncler", "color": "черный", "category": "Верхняя одежда"},
+    {"name": "Кожаные перчатки", "price": 14990, "brand": "Tom Ford", "color": "коричневый", "category": "Аксессуары"},
+    {"name": "Шорты", "price": 19990, "brand": "Lacoste", "color": "белый", "category": "Шорты"},
+    {"name": "Ветровка", "price": 34990, "brand": "The North Face", "color": "синий", "category": "Верхняя одежда"},
+    {"name": "Кожаный жилет", "price": 43990, "brand": "Saint Laurent", "color": "черный", "category": "Верхняя одежда"},
+    {"name": "Бейсболка", "price": 8990, "brand": "New Era", "color": "черный", "category": "Головные уборы"}
+]
+
+
+def overall_min_max():
+    prices = [p["price"] for p in PRODUCTS]
+    return (min(prices), max(prices))
+
+
+def apply_filters(items, min_p, max_p):
+    result = []
+    for it in items:
+        price = it["price"]
+        if min_p is not None and price < min_p:
+            continue
+        if max_p is not None and price > max_p:
+            continue
+        result.append(it)
+    return result
+
+
+@lab3.route('/lab3/products', methods=['GET'])
+def products_filter():
+    # Глобальные мин/макс для плейсхолдеров
+    glob_min, glob_max = overall_min_max()
+
+    # Кнопка сброса: очищаем куки и показываем все
+    if request.args.get('action') == 'reset':
+        resp = make_response(render_template(
+            'lab3/products.html',
+            items=PRODUCTS,
+            count=len(PRODUCTS),
+            glob_min=glob_min, glob_max=glob_max,
+            cur_min='', cur_max='',  # поля пустые
+            message=None
+        ))
+        resp.delete_cookie('min_price')
+        resp.delete_cookie('max_price')
+        return resp
+
+    # Берем значения: сначала из query, если пусто — из cookie
+    min_s = request.args.get('min', default=None)
+    max_s = request.args.get('max', default=None)
+
+    # Если пользователь не передал параметры, но есть куки — подставим их
+    if (min_s is None or min_s == ''):
+        min_s = request.cookies.get('min_price', default='')
+    if (max_s is None or max_s == ''):
+        max_s = request.cookies.get('max_price', default='')
+
+    # Преобразуем к числам (пустые оставляем None)
+    def to_int_or_none(s):
+        if s is None or s == '':
+            return None
+        try:
+            return int(s)
+        except:
+            return None
+
+    min_v = to_int_or_none(min_s)
+    max_v = to_int_or_none(max_s)
+
+    # Если оба заданы и перепутаны — меняем местами
+    if min_v is not None and max_v is not None and min_v > max_v:
+        min_v, max_v = max_v, min_v
+        # и в форме поменяем местами
+        min_s, max_s = (str(min_v), str(max_v))
+
+    # Фильтруем (если оба None — покажем все)
+    filtered = apply_filters(PRODUCTS, min_v, max_v)
+    message = None
+    if len(filtered) == 0:
+        message = "Не найдено ни одних часов"
+
+    # Готовим ответ и ставим куки, если пользователь передал фильтры
+    resp = make_response(render_template(
+        'lab3/products.html',
+        items=filtered,
+        count=len(filtered),
+        glob_min=glob_min, glob_max=glob_max,
+        cur_min=min_s or '',
+        cur_max=max_s or '',
+        message=message
+    ))
+
+    # Сохраняем куки только если хотя бы одно из значений было в запросе
+    # (т.е. человек нажал «Искать»)
+    if 'min' in request.args or 'max' in request.args:
+        # Пустые очищаем
+        if min_v is None:
+            resp.delete_cookie('min_price')
+        else:
+            resp.set_cookie('min_price', str(min_v))
+        if max_v is None:
+            resp.delete_cookie('max_price')
+        else:
+            resp.set_cookie('max_price', str(max_v))
+
+    return resp
