@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+
+    <style>
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 16px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            background: #fff;
+        }
+        div { 
+            margin-bottom: 12px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 4px; 
+            font-weight: 600; 
+        }
+        select, input[type="color"] {
+            padding: 6px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover { 
+            filter: brightness(1.05); 
+        }
+    </style>
+
+    <h1>Настройки внешнего вида</h1>
+    <form>
+        <div>
+            <label for="color">Цвет текста:</label>
+            <input type="color" id="color" name="color" value="{{ color or '#000000' }}">
+        </div>
+
+        <div>
+            <label for="bgcolor">Цвет фона:</label>
+            <input type="color" id="bgcolor" name="bgcolor" value="{{ bgcolor or '#ffffff' }}">
+        </div>
+
+        <div>
+            <label for="fontsize">Размер шрифта:</label>
+            <select id="fontsize" name="fontsize">
+                <option value="14px" {% if fontsize == '14px' %}selected{% endif %}>Маленький</option>
+                <option value="16px" {% if fontsize == '16px' or not fontsize %}selected{% endif %}>Обычный</option>
+                <option value="18px" {% if fontsize == '18px' %}selected{% endif %}>Крупный</option>
+                <option value="22px" {% if fontsize == '22px' %}selected{% endif %}>Очень крупный</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="lineheight">Межстрочный интервал:</label>
+            <select id="lineheight" name="lineheight">
+                <option value="1.2" {% if lineheight == '1.2' %}selected{% endif %}>Плотно</option>
+                <option value="1.5" {% if lineheight == '1.5' or not lineheight %}selected{% endif %}>Стандарт</option>
+                <option value="1.8" {% if lineheight == '1.8' %}selected{% endif %}>Свободно</option>
+                <option value="2.0" {% if lineheight == '2.0' %}selected{% endif %}>Очень свободно</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Сохранить</button>
+        </div>
+    </form>
+{% endblock %}
