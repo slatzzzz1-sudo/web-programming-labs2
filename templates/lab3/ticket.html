@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+            margin: 32px; 
+            background: #f5f7fa; 
+        }
+        .ticket { 
+            max-width: 740px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 18px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,.12); 
+            overflow: hidden; 
+        }
+        .header { 
+            background: #2563eb; 
+            color: white; 
+            padding: 20px 24px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .body { 
+            padding: 24px; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 16px; 
+        }
+        .row { 
+            margin-bottom: 12px; 
+        }
+        .label { 
+            color: #64748b; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            letter-spacing: .05em; 
+            font-weight: 600;
+        }
+        .value { 
+            font-size: 17px; 
+            color: #1e293b;
+        }
+        .badge { 
+            background: #fef3c7; 
+            color: #92400e; 
+            padding: 6px 12px; 
+            border-radius: 999px; 
+            font-size: 13px; 
+            font-weight: 600;
+        }
+        .price { 
+            font-size: 32px; 
+            font-weight: 700; 
+            color: #059669;
+        }
+        .split { 
+            height: 2px; 
+            background: #f1f5f9; 
+            margin: 20px 0; 
+        }
+        ul { 
+            margin: 12px 0 0 20px; 
+            color: #475569;
+        }
+    </style>
+
+    <div class="ticket">
+        <div class="header">
+            <div>
+                <div style="opacity:.9">Железнодорожный билет</div>
+                {% if is_child %}<div class="badge" style="margin-top:6px;">Детский билет</div>{% endif %}
+            </div>
+            <div class="price">{{ price }} ₽</div>
+        </div>
+        <div class="body">
+            <div class="grid">
+                <div class="row"><div class="label">Пассажир</div><div class="value">{{ full_name }}</div></div>
+                <div class="row"><div class="label">Возраст</div><div class="value">{{ age }}</div></div>
+
+                <div class="row"><div class="label">Маршрут</div><div class="value">{{ origin }} → {{ destination }}</div></div>
+                <div class="row"><div class="label">Дата поездки</div><div class="value">{{ trip_date.strftime('%d.%m.%Y') }}</div></div>
+
+                <div class="row"><div class="label">Полка</div><div class="value">{{ berth }}</div></div>
+                <div class="row"><div class="label">Бельё</div><div class="value">{{ 'Да' if bedding else 'Нет' }}</div></div>
+
+                <div class="row"><div class="label">Багаж</div><div class="value">{{ 'Да' if baggage else 'Нет' }}</div></div>
+                <div class="row"><div class="label">Страховка</div><div class="value">{{ 'Да' if insurance else 'Нет' }}</div></div>
+            </div>
+
+            <div class="split"></div>
+
+            <div class="row">
+                <div class="label">Расчёт стоимости</div>
+                <ul>
+                    {% for name, val in breakdown %}
+                    <li>{{ name }}: +{{ val }} ₽</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: #f8fafc; 
+            padding: 24px; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #1e293b; 
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        form { 
+            background: #fff; 
+            padding: 24px; 
+            border-radius: 12px; 
+            max-width: 520px; 
+            margin: 0 auto; 
+            box-shadow: 0 4px 16px rgba(0,0,0,.08); 
+            border: 1px solid #f1f5f9;
+        }
+        p { 
+            margin-bottom: 18px; 
+        }
+        input[type="text"], input[type="number"], input[type="date"], select {
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        input[type="radio"] { 
+            width: auto; 
+            margin: 0; 
+        }
+        .radios { 
+            display: flex; 
+            gap: 20px; 
+            align-items: center; 
+        }
+        .radios label { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin: 0; 
+            cursor: pointer;
+        }
+        button { 
+            background: #2563eb; 
+            color: #fff; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        button:hover { 
+            background: #1d4ed8; 
+            transform: translateY(-1px);
+        }
+        ul { 
+            color: #dc2626; 
+            list-style: none; 
+            margin-bottom: 18px; 
+            padding: 12px;
+            background: #fef2f2;
+            border-radius: 6px;
+            border: 1px solid #fecaca;
+        }
+        li {
+            margin: 4px 0;
+        }
+    </style>
+
+    <h1>Оформление железнодорожного билета</h1>
+
+    {% if errors %}
+    <ul>
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('lab3.ticket_submit') }}">
+        <p>
+            ФИО пассажира:<br>
+            <input type="text" name="full_name" value="{{ form_data.full_name|default('') }}">
+        </p>
+
+        <p>
+            Возраст:<br>
+            <input type="number" name="age" min="1" max="120" value="{{ form_data.age|default('') }}">
+        </p>
+
+        <p>
+            Дата поездки:<br>
+            <input type="date" name="trip_date" value="{{ form_data.trip_date|default('') }}">
+        </p>
+
+        <p>
+            Пункт выезда:<br>
+            <input type="text" name="origin" value="{{ form_data.origin|default('') }}">
+        </p>
+
+        <p>
+            Пункт назначения:<br>
+            <input type="text" name="destination" value="{{ form_data.destination|default('') }}">
+        </p>
+
+        <p>
+            Полка:<br>
+            <select name="berth">
+            <option value="" {% if not form_data.berth %}selected{% endif %}>-- выберите --</option>
+            <option value="нижняя" {% if form_data.berth=='нижняя' %}selected{% endif %}>нижняя</option>
+            <option value="верхняя" {% if form_data.berth=='верхняя' %}selected{% endif %}>верхняя</option>
+            <option value="верхняя боковая" {% if form_data.berth=='верхняя боковая' %}selected{% endif %}>верхняя боковая</option>
+            <option value="нижняя боковая" {% if form_data.berth=='нижняя боковая' %}selected{% endif %}>нижняя боковая</option>
+            </select>
+        </p>
+
+        <p>
+            С бельём:<br>
+            <div class="radios">
+                <label><input type="radio" name="bedding" value="yes" {% if form_data.bedding=='yes' %}checked{% endif %}>Да</label>
+                <label><input type="radio" name="bedding" value="no"  {% if form_data.bedding=='no' %}checked{% endif %}>Нет</label>
+            </div>
+        </p>
+          
+        <p>
+            С багажом:<br>
+            <div class="radios">
+                <label><input type="radio" name="baggage" value="yes" {% if form_data.baggage=='yes' %}checked{% endif %}>Да</label>
+                <label><input type="radio" name="baggage" value="no"  {% if form_data.baggage=='no' %}checked{% endif %}>Нет</label>
+            </div>
+        </p>
+          
+        <p>
+            Нужна страховка:<br>
+            <div class="radios">
+                <label><input type="radio" name="insurance" value="yes" {% if form_data.insurance=='yes' %}checked{% endif %}>Да</label>
+                <label><input type="radio" name="insurance" value="no"  {% if form_data.insurance=='no' %}checked{% endif %}>Нет</label>
+            </div>
+        </p>
+
+        <p style="text-align:center;">
+            <button type="submit">Сформировать билет</button>
+        </p>
+    </form>
+{% endblock %}
