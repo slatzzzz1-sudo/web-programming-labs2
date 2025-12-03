@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 4{% endblock %}
+
+{% block main %}
+    <h1>Заказ зерна</h1>
+    <form method="post">
+        <div>
+            <label for="grain">Выберите зерно:</label>
+            <select id="grain" name="grain">
+                {% for g, price in grains.items() %}
+                    <option value="{{ g }}" {% if g == selected_grain %}selected{% endif %}>
+                        {{ g }} ({{ price }} руб/т)
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="margin-top: 10px;">
+            <label for="weight">Вес (в тоннах):</label>
+            <input type="text" id="weight" name="weight" value="{{ weight }}">
+        </div>
+        <div style="margin-top: 10px;">
+            <button type="submit">Оформить заказ</button>
+            <button type="reset">Очистить</button>
+        </div>
+    </form>
+
+    {% if error %}
+        <div style="margin-top: 15px; color: red; font-weight: bold;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if message %}
+        <div style="margin-top: 15px; color: green; font-weight: bold;">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    {% if discount_text %}
+        <div style="margin-top: 10px; color: blue;">
+            {{ discount_text }}
+        </div>
+    {% endif %}
+{% endblock %}
