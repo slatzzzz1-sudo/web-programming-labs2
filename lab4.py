@@ -25,3 +25,23 @@ def div():
         return render_template('lab4/div.html', error='На ноль делить нельзя!')
     result = x1 / x2
     return render_template('lab4/div.html', x1=x1, x2=x2, result=result)
+
+@lab4.route('/lab4/sum-form')
+def sum_form():
+    return render_template('lab4/sum-form.html')
+
+
+@lab4.route('/lab4/sum', methods = ['POST'])
+def sum():
+    x1 = request.form.get('x1')
+    x2 = request.form.get('x2')
+    if x1 == '':
+        x1 = 0
+        return x1
+    if x2 == '':
+        x2 == 0
+        return x2
+    x1 = int(x1)
+    x2 = int(x2)
+    result = x1 + x2
+    return render_template('/lab4/sum.html', x1=x1, x2=x2, result=result)
