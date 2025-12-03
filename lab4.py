@@ -13,12 +13,15 @@ def div_form():
     return render_template('lab4/div-form.html')
 
 
-@lab4.route('/lab4/div', methods = ['POST'])
+
+@lab4.route('/lab4/div', methods=['POST'])
+
 def div():
     x1 = request.form.get('x1')
     x2 = request.form.get('x2')
-    if x1 == '' or x2 == '' or x1 == None or x2 == None:
-        return render_template('lab4/div.html', error='Оба поля должны быть заполнены!')
+    if x1 == '' or x2 == '':
+        return render_template('lab4/div.html',
+                               error='Оба поля должны быть заполнены!')
     x1 = int(x1)
     x2 = int(x2)
     if x2 == 0:
@@ -31,17 +34,76 @@ def sum_form():
     return render_template('lab4/sum-form.html')
 
 
-@lab4.route('/lab4/sum', methods = ['POST'])
+
+@lab4.route('/lab4/sum', methods=['POST'])
 def sum():
     x1 = request.form.get('x1')
     x2 = request.form.get('x2')
     if x1 == '':
         x1 = 0
-        return x1
+        
     if x2 == '':
-        x2 == 0
-        return x2
+        x2 = 0
     x1 = int(x1)
     x2 = int(x2)
     result = x1 + x2
     return render_template('/lab4/sum.html', x1=x1, x2=x2, result=result)
+
+
+@lab4.route('/lab4/multiplication-form')
+def multiplication_form():
+    return render_template('lab4/multiplication-form.html')
+
+
+@lab4.route('/lab4/multiplication', methods=['POST'])
+def multiplication():
+    x1 = request.form.get('x1')
+    x2 = request.form.get('x2')
+    if x1 == '':
+        x1 = 1
+    if x2 == '':
+        x2 = 1
+    x1 = int(x1)
+    x2 = int(x2)
+    result = x1 * x2
+    return render_template('/lab4/multiplication.html', x1=x1, x2=x2,
+                           result=result)
+
+
+@lab4.route('/lab4/sub-form')
+def sub_form():
+    return render_template('lab4/sub-form.html')
+
+
+@lab4.route('/lab4/sub', methods=['POST'])
+def sub():
+    x1 = request.form.get('x1')
+    x2 = request.form.get('x2')
+    if x1 == '' or x2 == '':
+        return render_template('lab4/sub.html',
+                               error='Оба поля должны быть заполнены!')
+    x1 = int(x1)
+    x2 = int(x2)
+    result = x1 - x2
+    return render_template('lab4/sub.html', x1=x1, x2=x2, result=result)
+
+
+@lab4.route('/lab4/exp-form')
+def exp_form():
+    return render_template('lab4/exp-form.html')
+
+
+@lab4.route('/lab4/exp', methods=['POST'])
+def exp():
+    x1 = request.form.get('x1')
+    x2 = request.form.get('x2')
+    if x1 == '' or x2 == '':
+        return render_template('lab4/sub.html',
+                               error='Оба поля должны быть заполнены!')
+    x1 = int(x1)
+    x2 = int(x2)
+    if x1 == 0 and x2 == 0:
+        return render_template('/lab4/exp.html',
+                               error = 'Не может быть так, что оба поля равны нулю!')
+    result = x1 ** x2
+    return render_template('lab4/exp.html', x1=x1, x2=x2, result=result)
