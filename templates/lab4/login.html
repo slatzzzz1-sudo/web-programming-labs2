@@ -6,7 +6,11 @@
     {% if authorized %}
         <h1>Добро пожаловать, {{ login }}!</h1>
         <p>Вы успешно авторизовались в системе.</p>
-        <a href="/lab4/login">Выйти</a>
+        <div>
+            <form action="/lab4/logout" method="post">
+                <button>Выход</button>
+            </form>
+        </div>
     {% else %}
         <h1>Вход</h1>
         <h2>Пожалуйста, авторизуйтесь</h2>
