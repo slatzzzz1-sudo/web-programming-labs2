@@ -308,3 +308,135 @@ def grain_order():
         weight=weight,
         discount_text=discount_text
     )
+
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    error = ''
+    if request.method == 'POST':
+        login_form = request.form.get('login', '').strip()
+        name_form = request.form.get('name', '').strip()
+        password_form = request.form.get('password', '')
+        confirm_form = request.form.get('confirm', '')
+
+        # проверки на пустые
+        if login_form == '':
+            error = 'Не введён логин'
+        elif name_form == '':
+            error = 'Не введено имя'
+        elif password_form == '':
+            error = 'Не введён пароль'
+        elif password_form != confirm_form:
+            error = 'Пароль и подтверждение не совпадают'
+        else:
+            # проверка, что такого логина ещё нет
+            exists = False
+            for u in users:
+                if u['login'] == login_form:
+                    exists = True
+                    break
+            if exists:
+                error = 'Такой логин уже существует'
+            else:
+                # добавляем пользователя
+                users.append({
+                    'login': login_form,
+                    'password': password_form,
+                    'name': name_form
+                })
+                # сразу логиним
+                session['login'] = login_form
+                return redirect('/lab4/login')
+
+    return render_template('/lab4/register.html', error=error)
+
+
+@lab4.route('/lab4/users')
+def users_list():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+    current_login = session['login']
+    return render_template('/lab4/users.html',
+                           users=users,
+                           current_login=current_login)
+
+
+@lab4.route('/lab4/edit', methods=['GET', 'POST'])
+def edit_user():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+    current_login = session['login']
+
+    # ищем текущего пользователя
+    current_user = None
+    for u in users:
+        if u['login'] == current_login:
+            current_user = u
+            break
+
+    if current_user is None:
+        # на всякий случай
+        return redirect('/lab4/login')
+
+    error = ''
+
+    if request.method == 'POST':
+        new_login = request.form.get('login', '').strip()
+        new_name = request.form.get('name', '').strip()
+        new_password = request.form.get('password', '')
+        confirm = request.form.get('confirm', '')
+
+        if new_login == '':
+            error = 'Не введён логин'
+        elif new_name == '':
+            error = 'Не введено имя'
+        else:
+            # проверяем, что логин не занят другим
+            taken = False
+            for u in users:
+                if u['login'] == new_login and u is not current_user:
+                    taken = True
+                    break
+            if taken:
+                error = 'Такой логин уже используется другим пользователем'
+            else:
+                # пароль меняем только если оба поля не пустые
+                if new_password == '' and confirm == '':
+                    # оставить старый пароль
+                    current_user['login'] = new_login
+                    current_user['name'] = new_name
+                    # если логин поменяли — обновим в сессии
+                    session['login'] = new_login
+                    return redirect('/lab4/users')
+                else:
+                    if new_password != confirm:
+                        error = 'Пароль и подтверждение не совпадают'
+                    else:
+                        current_user['login'] = new_login
+                        current_user['name'] = new_name
+                        current_user['password'] = new_password
+                        session['login'] = new_login
+                        return redirect('/lab4/users')
+
+    return render_template('/lab4/edit_user.html',
+                           user=current_user,
+                           error=error)
+
+
+@lab4.route('/lab4/delete', methods=['POST'])
+def delete_user():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+    current_login = session['login']
+
+    # удаляем из списка
+    for i, u in enumerate(users):
+        if u['login'] == current_login:
+            users.pop(i)
+            break
+
+    # выходим из системы
+    session.pop('login', None)
+    return redirect('/lab4/login')

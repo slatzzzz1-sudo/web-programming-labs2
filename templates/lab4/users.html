@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 4{% endblock %}
+
+{% block main %}
+    <div class="users-container">
+        <h1>Список пользователей</h1>
+
+        <div class="table-wrapper">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Имя пользователя</th>
+                        <th>Логин</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                        <tr>
+                            <td>{{ u.name }}</td>
+                            <td>{{ u.login }}</td>
+                            <td class="actions">
+                                {% if u.login == current_login %}
+                                    <div class="action-buttons">
+                                        <a href="/lab4/edit" class="btn-edit">Редактировать</a>
+                                        <form action="/lab4/delete" method="post">
+                                            <button type="submit" class="btn-delete">Удалить аккаунт</button>
+                                        </form>
+                                    </div>
+                                {% else %}
+                                    <span class="no-actions">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="navigation">
+            <a href="/lab4/login" class="btn-back">Вернуться на главную</a>
+        </div>
+    </div>
+
+    <style>
+    .users-container {
+        max-width: 980px;
+        margin: 40px auto;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        color: #1e293b;
+        margin-bottom: 35px;
+        font-size: 2.4rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        margin: 25px 0;
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: white;
+        font-size: 15px;
+    }
+
+    .users-table th {
+        background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+        padding: 18px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: white;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+        border: none;
+        position: relative;
+    }
+
+    .users-table th:after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .users-table th:last-child:after {
+        display: none;
+    }
+
+    .users-table td {
+        padding: 18px 20px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.25s ease;
+        font-weight: 450;
+    }
+
+    .users-table tr {
+        transition: all 0.25s ease;
+    }
+
+    .users-table tr:hover {
+        background-color: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .users-table tr:hover td {
+        color: #1e293b;
+    }
+
+    .actions {
+        text-align: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-edit {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-edit:active {
+        transform: translateY(0);
+    }
+
+    .btn-delete {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-delete:active {
+        transform: translateY(0);
+    }
+
+    .no-actions {
+        color: #94a3b8;
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    .navigation {
+        text-align: center;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 15px;
+        box-shadow: 0 3px 8px rgba(100, 116, 139, 0.2);
+    }
+
+    .btn-back:hover {
+        background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(100, 116, 139, 0.3);
+    }
+
+    .btn-back:active {
+        transform: translateY(0);
+    }
+    </style>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block lab %}Редактирование пользователя{% endblock %}
+
+{% block main %}
+    <h1>Редактирование своих данных</h1>
+    <form method="post">
+        <div>
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" value="{{ user.login }}">
+        </div>
+        <div>
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}">
+        </div>
+        <div>
+            <label for="password">Новый пароль:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <div>
+            <label for="confirm">Подтверждение пароля:</label>
+            <input type="password" id="confirm" name="confirm">
+        </div>
+        <p style="font-size: 12px; color: #7cf8c9;">
+            Если оставить оба поля пароля пустыми, старый пароль останется.
+        </p>
+        {% if error %}
+            <div style="color: red; font-weight: bold; margin-top: 10px;">
+                {{ error }}
+            </div>
+        {% endif %}
+        <div style="margin-top: 10px;">
+            <button type="submit">Сохранить</button>
+        </div>
+    </form>
+    <p style="margin-top: 10px;">
+        <a href="/lab4/users">Назад к списку</a>
+    </p>
+{% endblock %}
