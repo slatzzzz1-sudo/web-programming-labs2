@@ -1,5 +1,6 @@
 from flask import Flask, url_for, request
 import datetime
+import os
 
 from lab1 import lab1
 from lab2 import lab2
@@ -16,7 +17,9 @@ app.register_blueprint(lab4)
 app.register_blueprint(lab5)
 
 
-app.secret_key = 'секретно-секретный секрет'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY',
+                                          'секретно-секретный ключ')
+app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 
 @app.route('/')
