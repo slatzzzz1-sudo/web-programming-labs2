@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Список пользователей</h1>
+
+    <div class="users-list">
+        {% for user in users %}
+            <div class="user-item">
+                <strong>Логин:</strong> {{ user['login'] }}<br>
+                <strong>Имя:</strong> {{ user['real_name'] or 'Не указано' }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="/lab5/list" class="btn">Мои статьи</a>
+        <a href="/lab5" class="btn">На главную</a>
+    </div>
+{% endblock %}

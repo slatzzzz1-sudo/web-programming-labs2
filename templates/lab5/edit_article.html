@@ -3,42 +3,43 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Создание статьи</h1>
+    <h1>Редактирование статьи</h1>
 
     <form method="post" class="lab5-form">
         <div class="form-group">
             <label>
                 Название статьи:
-                <input type="text" maxlength="50" name="title" required>
+                <input type="text" maxlength="50" name="title" value="{{ article['title'] }}" required>
             </label>
         </div>
 
         <div class="form-group">
             <label>Текст статьи:</label>
-            <textarea name="article_text" required></textarea>
+            <textarea name="article_text" required>{{ article['article_text'] }}</textarea>
         </div>
 
                 <div class="form-group">
             <label>
-                <input type="checkbox" name="is_public">
+                <input type="checkbox" name="is_public" {{ 'checked' if article['is_public'] }}>
                 Сделать публичной
             </label>
         </div>
 
         <div class="form-group">
             <label>
-                <input type="checkbox" name="is_favorite">
+                <input type="checkbox" name="is_favorite" {{ 'checked' if article['is_favorite'] }}>
                 Добавить в избранное
             </label>
         </div>
+
 
         {% if error %}
             <div class="error-message">{{ error }}</div>
         {% endif %}
 
         <div>
-            <button type="submit" class="btn">Готово</button>
-            <a href="/lab5/list" class="btn">Назад к статьям</a>
+            <button type="submit" class="btn">Сохранить изменения</button>
+            <a href="/lab5/list" class="btn">Отмена</a>
         </div>
     </form>
 {% endblock %}

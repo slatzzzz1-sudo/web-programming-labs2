@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Редактирование профиля</h1>
+
+    <form method="post" class="lab5-form">
+        <div class="form-group">
+            <label>
+                Реальное имя:
+                <input type="text" name="real_name" value="{{ user['real_name'] or '' }}">
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Новый пароль:
+                <input type="password" name="new_password" placeholder="Оставьте пустым, если не хотите менять">
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Подтверждение пароля:
+                <input type="password" name="confirm_password" placeholder="Подтвердите новый пароль">
+            </label>
+        </div>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <div>
+            <button type="submit" class="btn">Сохранить изменения</button>
+            <a href="/lab5/list" class="btn">Отмена</a>
+        </div>
+    </form>
+{% endblock %}
