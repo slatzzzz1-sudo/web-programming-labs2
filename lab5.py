@@ -41,7 +41,7 @@ def db_connect():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-
+    return conn, cur
 
 def db_close(conn, cur):
     conn.commit()
@@ -95,7 +95,7 @@ def login():
     login = request.form.get('login')
     password = request.form.get('password')
     
-    # ИСПРАВЛЕНИЕ: используем AND вместо OR
+    
     if not (login and password):
         return render_template('lab5/login.html', error='Заполните все поля')
   
@@ -118,6 +118,8 @@ def login():
         db_close(conn, cur)
         return render_template('lab5/login.html',
                                error='Логин и/или пароль неверны')
+    
+    session['login'] = login
     session['user_id'] = user['id']
     
     user_dict = dict(user)
@@ -210,12 +212,14 @@ def list_articles():
 
     db_close(conn, cur)
     # Проверка на отсутствие статей
+
     if not articles:
         return render_template('/lab5/articles.html', articles=articles,
                                no_articles=True)
 
     return render_template('/lab5/articles.html', articles=articles,
                            no_articles=False)
+
 @lab5.route('/lab5/public')
 def public_articles():
     conn, cur = db_connect()
@@ -382,8 +386,8 @@ def profile():
     # Проверка подтверждения пароля
     if new_password and new_password != confirm_password:
         db_close(conn, cur)
-        return render_template('lab5/profile.html', 
-                               user={'real_name': real_name}, 
+        return render_template('lab5/profile.html',
+                               user={'real_name': real_name},
                                error='Пароли не совпадают')
 
     # Обновление данных
