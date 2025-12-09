@@ -16,37 +16,29 @@ def lab():
 
 
 def db_connect():
-    # Пытаемся использовать PostgreSQL, если недоступен - переключаемся на SQLite
-    db_type = current_app.config.get('DB_TYPE', 'postgres')
-
-    if db_type == 'postgres':
-        try:
-            conn = psycopg2.connect(
-                host='127.0.0.1',
-                database='samoylov_dima_knowledge_base',
-                user='samoylov_dima_knowledge_base',
-                password='123'
-            )
-            cur = conn.cursor(cursor_factory=RealDictCursor)
-            current_app.config['ACTIVE_DB_TYPE'] = 'postgres'
-            return conn, cur
-        except psycopg2.OperationalError:
-            # Если PostgreSQL недоступен, автоматически переключаемся на SQLite
-            print("PostgreSQL недоступен, используется SQLite")
-            # Не возвращаем здесь, продолжаем выполнение для SQLite
-    
-    # Используем SQLite
     try:
+        # Всегда используем SQLite на PythonAnywhere
         dir_path = path.dirname(path.realpath(__file__))
         db_path = path.join(dir_path, "database.db")
+        
+        # Проверяем существование файла БД
+        if not path.exists(db_path):
+            print(f"Файл БД не найден: {db_path}")
+            # Создаем пустой файл
+            open(db_path, 'w').close()
+        
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        
+        # Устанавливаем тип БД
         current_app.config['ACTIVE_DB_TYPE'] = 'sqlite'
+        
         return conn, cur
+        
     except Exception as e:
-        print(f"Ошибка подключения к SQLite: {e}")
-        raise  # Пробрасываем исключение дальше
+        print(f"Критическая ошибка подключения к БД: {e}")
+        raise
 
 def db_close(conn, cur):
     conn.commit()
