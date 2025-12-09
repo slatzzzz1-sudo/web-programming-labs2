@@ -13,6 +13,9 @@ lab5 = Blueprint('lab5', __name__)
 def lab():
     return render_template('lab5/lab5.html', login=session.get('login'))
 
+@lab5.route('/lab5/err')
+def err():
+    return render_template('lab5/errr.html',login=session.get('login'))
 
 def db_connect():
     # Пытаемся использовать PostgreSQL, если недоступен - переключаемся на SQLite
