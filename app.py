@@ -168,3 +168,38 @@ def not_found(err):
         </body>
     </html>
     ''', 404
+
+import sqlite3
+import os
+
+def init_database():
+    """Инициализация базы данных при запуске приложения"""
+    db_path = os.path.join(os.path.dirname(__file__), 'database.db')
+    
+    if not os.path.exists(db_path):
+        print("Создание базы данных...")
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Создание таблиц
+        cursor.execute('''
+        CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            login TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            real_name TEXT
+        )
+        ''')
+        
+        cursor.execute('''
+        CREATE TABLE articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            title VARCHAR(50),
+            article_text TEXT,
+            is_favorite BOOLEAN DEFAULT 0,
+            is_public BOOLEAN DEFAULT 0,
+            likes INTEGER DEFAULT 0,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        ''')

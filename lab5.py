@@ -16,16 +16,19 @@ def lab():
 
 
 def db_connect():
+    # Всегда используем SQLite
     try:
-        # Всегда используем SQLite на PythonAnywhere
         dir_path = path.dirname(path.realpath(__file__))
         db_path = path.join(dir_path, "database.db")
         
         # Проверяем существование файла БД
         if not path.exists(db_path):
-            print(f"Файл БД не найден: {db_path}")
-            # Создаем пустой файл
-            open(db_path, 'w').close()
+            print(f"ВНИМАНИЕ: Файл БД не найден: {db_path}")
+            print("Создайте базу данных с помощью create_database.py")
+            # Можно автоматически создать пустую БД
+            # conn = sqlite3.connect(db_path)
+            # conn.close()
+            # Но лучше создать с таблицами через скрипт
         
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
@@ -38,7 +41,8 @@ def db_connect():
         
     except Exception as e:
         print(f"Критическая ошибка подключения к БД: {e}")
-        raise
+        # Возвращаем пользователю понятную ошибку
+        raise Exception(f"Ошибка подключения к базе данных: {str(e)}")
 
 def db_close(conn, cur):
     conn.commit()
