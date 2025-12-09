@@ -51,39 +51,48 @@ def db_close(conn, cur):
 
 @lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('lab5/register.html')
-    login = request.form.get('login')
-    password = request.form.get('password')
-    real_name = request.form.get('real_name')
+ if request.method == 'GET':
+        return render_template('lab5/errr.html')
+ if request.method == 'POST':
+        return render_template('lab5/errr.html')
 
-    if not (login and password):
-        return render_template('lab5/register.html',
-                               error='Заполните логин и пароль')
 
-    conn, cur = db_connect()
+   # print request.method
+   ## if request.method == 'GET':
+  #      return render_template('lab5/register.html')
+  #  login = request.form.get('login')
+  #  password = request.form.get('password')
+  #  real_name = request.form.get('real_name')
 
-    db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
 
-    if db_type == 'postgres':
-        cur.execute("SELECT login FROM users WHERE login=%s;", (login, ))
-    else:
-        cur.execute("SELECT login FROM users WHERE login=?;", (login, ))
 
-    if cur.fetchone():
-        db_close(conn, cur)
-        return render_template('lab5/register.html',
-                               error='Такой пользователь уже существует')
+ #   if not (login and password):
+ #       return render_template('lab5/register.html',
+ #                              error='Заполните логин и пароль')
 
-    password_hash = generate_password_hash(password)
-    if db_type == 'postgres':
-        cur.execute("INSERT INTO users (login, password, real_name) VALUES (%s, %s, %s);",
-                    (login, password_hash, real_name))
-    else:
-        cur.execute("INSERT INTO users (login, password, real_name) VALUES (?, ?, ?);",
-                    (login, password_hash, real_name))
-    db_close(conn, cur)
-    return render_template('lab5/success.html', login=login)
+#    conn, cur = db_connect()
+
+ #   db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
+
+#    if db_type == 'postgres':
+#        cur.execute("SELECT login FROM users WHERE login=%s;", (login, ))
+#    else:
+#        cur.execute("SELECT login FROM users WHERE login=?;", (login, ))
+
+#    if cur.fetchone():
+#        db_close(conn, cur)
+#        return render_template('lab5/register.html',
+#                               error='Такой пользователь уже существует')
+
+ #   password_hash = generate_password_hash(password)
+ #   if db_type == 'postgres':
+ #       cur.execute("INSERT INTO users (login, password, real_name) VALUES (%s, %s, %s);",
+  #                  (login, password_hash, real_name))
+ #   else:
+ #       cur.execute("INSERT INTO users (login, password, real_name) VALUES (?, ?, ?);",
+ #                   (login, password_hash, real_name))
+ #   db_close(conn, cur)
+ #  return render_template('lab5/success.html', login=login)
 
 
 @lab5.route('/lab5/login', methods=['GET', 'POST'])
