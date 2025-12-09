@@ -6,7 +6,6 @@ from os import path
 from psycopg2.extras import RealDictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
 lab5 = Blueprint('lab5', __name__)
 
 
@@ -16,33 +15,33 @@ def lab():
 
 
 def db_connect():
-    # Всегда используем SQLite
-    try:
-        dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "database.db")
-        
-        # Проверяем существование файла БД
-        if not path.exists(db_path):
-            print(f"ВНИМАНИЕ: Файл БД не найден: {db_path}")
-            print("Создайте базу данных с помощью create_database.py")
-            # Можно автоматически создать пустую БД
-            # conn = sqlite3.connect(db_path)
-            # conn.close()
-            # Но лучше создать с таблицами через скрипт
-        
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        
-        # Устанавливаем тип БД
-        current_app.config['ACTIVE_DB_TYPE'] = 'sqlite'
-        
-        return conn, cur
-        
-    except Exception as e:
-        print(f"Критическая ошибка подключения к БД: {e}")
-        # Возвращаем пользователю понятную ошибку
-        raise Exception(f"Ошибка подключения к базе данных: {str(e)}")
+    # Пытаемся использовать PostgreSQL, если недоступен - переключаемся на SQLite
+    db_type = current_app.config.get('DB_TYPE', 'postgres')
+
+    if db_type == 'postgres':
+        try:
+            conn = psycopg2.connect(
+                host='127.0.0.1',
+                database='samoylov_dima_knowledge_base',
+                user='samoylov_dima_knowledge_base',
+                password='123'
+            )
+            cur = conn.cursor(cursor_factory=RealDictCursor)
+            current_app.config['ACTIVE_DB_TYPE'] = 'postgres'
+            return conn, cur
+        except psycopg2.OperationalError:
+            # Если PostgreSQL недоступен, автоматически переключаемся на SQLite
+            print("PostgreSQL недоступен, используется SQLite")
+            db_type = 'sqlite'
+
+    # Используем SQLite
+    dir_path = path.dirname(path.realpath(__file__))
+    db_path = path.join(dir_path, "database.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    return conn, cur
+
 
 def db_close(conn, cur):
     conn.commit()
@@ -57,7 +56,6 @@ def register():
     login = request.form.get('login')
     password = request.form.get('password')
     real_name = request.form.get('real_name')
-    
 
     if not (login and password):
         return render_template('lab5/register.html',
@@ -65,9 +63,8 @@ def register():
 
     conn, cur = db_connect()
 
-
     db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
-    
+
     if db_type == 'postgres':
         cur.execute("SELECT login FROM users WHERE login=%s;", (login, ))
     else:
@@ -77,7 +74,7 @@ def register():
         db_close(conn, cur)
         return render_template('lab5/register.html',
                                error='Такой пользователь уже существует')
-    
+
     password_hash = generate_password_hash(password)
     if db_type == 'postgres':
         cur.execute("INSERT INTO users (login, password, real_name) VALUES (%s, %s, %s);",
@@ -95,16 +92,14 @@ def login():
         return render_template('lab5/login.html')
     login = request.form.get('login')
     password = request.form.get('password')
-    
-    
-    if not (login and password):
+
+    if not (login or password):
         return render_template('lab5/login.html', error='Заполните все поля')
-  
+
     conn, cur = db_connect()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
 
     db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
-    
+
     if db_type == 'postgres':
         cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
     else:
@@ -119,16 +114,17 @@ def login():
         db_close(conn, cur)
         return render_template('lab5/login.html',
                                error='Логин и/или пароль неверны')
-    
+
     session['login'] = login
     session['user_id'] = user['id']
-    
+
     user_dict = dict(user)
     session['real_name'] = user_dict.get('real_name', '')
-    
+
     db_close(conn, cur)
     return render_template('lab5/success_login.html',
                            login=login)
+
 
 @lab5.route('/lab5/logout')
 def logout():
@@ -156,11 +152,11 @@ def create():
     if not title or not article_text:
         return render_template('lab5/create_articles.html',
                                error='Заполните название и текст статьи')
-    
+
     conn, cur = db_connect()
 
     db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
-    
+
     if db_type == 'postgres':
         cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
     else:
@@ -194,7 +190,7 @@ def list_articles():
     conn, cur = db_connect()
 
     db_type = current_app.config.get('ACTIVE_DB_TYPE', 'sqlite')
-    
+
     if db_type == 'postgres':
         cur.execute("SELECT id FROM users WHERE login=%s;", (login, ))
     else:
@@ -204,7 +200,7 @@ def list_articles():
 
     # Сначала избранные, потом остальные
     if db_type == 'postgres':
-         cur.execute("SELECT * FROM articles WHERE user_id=%s ORDER BY is_favorite DESC, id DESC;",
+        cur.execute("SELECT * FROM articles WHERE user_id=%s ORDER BY is_favorite DESC, id DESC;",
                     (login_id, ))
     else:
         cur.execute("SELECT * FROM articles WHERE user_id=? ORDER BY is_favorite DESC, id DESC;",
@@ -212,14 +208,15 @@ def list_articles():
     articles = cur.fetchall()
 
     db_close(conn, cur)
-    # Проверка на отсутствие статей
 
+    # Проверка на отсутствие статей
     if not articles:
         return render_template('/lab5/articles.html', articles=articles,
                                no_articles=True)
 
     return render_template('/lab5/articles.html', articles=articles,
                            no_articles=False)
+
 
 @lab5.route('/lab5/public')
 def public_articles():
@@ -243,10 +240,10 @@ def public_articles():
             WHERE a.is_public = 1
             ORDER BY a.is_favorite DESC, a.id DESC
         """)
-    
+
     articles = cur.fetchall()
     db_close(conn, cur)
-    
+
     return render_template('/lab5/public_articles.html', articles=articles,
                            login=session.get('login'))
 
@@ -317,7 +314,7 @@ def delete_article(article_id):
         cur.execute("SELECT * FROM articles WHERE id=%s AND user_id=%s;",
                     (article_id, session.get('user_id')))
     else:
-        cur.execute("SELECT * FROM articles WHERE id=? AND user_id=?;", 
+        cur.execute("SELECT * FROM articles WHERE id=? AND user_id=?;",
                     (article_id, session.get('user_id')))
 
     article = cur.fetchone()
@@ -346,10 +343,10 @@ def users_list():
         cur.execute("SELECT login, real_name FROM users ORDER BY login;")
     else:
         cur.execute("SELECT login, real_name FROM users ORDER BY login;")
-    
+
     users = cur.fetchall()
     db_close(conn, cur)
-    
+
     return render_template('/lab5/users.html', users=users)
 
 
@@ -369,7 +366,7 @@ def profile():
         else:
             cur.execute("SELECT real_name FROM users WHERE id=?;",
                         (session.get('user_id'),))
-        
+
         user = cur.fetchone()
         db_close(conn, cur)
 

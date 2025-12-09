@@ -2,6 +2,7 @@
 
 {% block lab %}Лабораторная работа 5{% endblock %}
 
+{% block main %}
     <h1>Мои статьи</h1>
 
     {% if no_articles %}
@@ -25,7 +26,7 @@
             </div>
         {% endfor %}
     {% endif %}
-    
+
     <div style="margin-top: 20px;">
         <a href="/lab5/create" class="btn">Создать новую статью</a>
         <a href="/lab5/public" class="btn">Публичные статьи</a>
@@ -33,5 +34,4 @@
         <a href="/lab5/profile" class="btn">Редактировать профиль</a>
         <a href="/lab5/logout" class="btn">Выйти из системы</a>
     </div>
-
 {% endblock %}
