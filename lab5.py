@@ -33,15 +33,20 @@ def db_connect():
         except psycopg2.OperationalError:
             # Если PostgreSQL недоступен, автоматически переключаемся на SQLite
             print("PostgreSQL недоступен, используется SQLite")
-            db_type = 'sqlite'
+            # Не возвращаем здесь, продолжаем выполнение для SQLite
     
     # Используем SQLite
-    dir_path = path.dirname(path.realpath(__file__))
-    db_path = path.join(dir_path, "database.db")
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    return conn, cur
+    try:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        current_app.config['ACTIVE_DB_TYPE'] = 'sqlite'
+        return conn, cur
+    except Exception as e:
+        print(f"Ошибка подключения к SQLite: {e}")
+        raise  # Пробрасываем исключение дальше
 
 def db_close(conn, cur):
     conn.commit()
