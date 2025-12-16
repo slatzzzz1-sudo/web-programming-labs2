@@ -70,3 +70,10 @@ def get_film(id):
 def del_film(id):
     del films[id]
     return '', 204
+
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+def put_film(id):
+    film = request.get_json()
+    films[id] = film
+    return films[id]
