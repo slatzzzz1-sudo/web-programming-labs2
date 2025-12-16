@@ -9,13 +9,19 @@ function fillFilmList() {
         for(let i = 0; i<films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitle = document.createElement('td');
             let tdTitleRus = document.createElement('td');
+            let tdTitle = document.createElement('td');
             let tdYear = document.createElement('td');
             let tdAction = document.createElement('td');
 
-            tdTitle.innerHTML = films[i].title === films[i].title_ru ? '' : films[i].title;
-            tdTitleRus.innerHTML = films[i].title_ru;
+            tdTitleRus.innerHTML = films[i].title_ru || films[i].title || '';
+
+            if (films[i].title && films[i].title !== films[i].title_ru) {
+                tdTitle.innerHTML = `<i>(${films[i].title})</i>`;
+            } else {
+                tdTitle.innerHTML = '';
+            }
+
             tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
@@ -33,8 +39,8 @@ function fillFilmList() {
             tdAction.appendChild(editButton);
             tdAction.appendChild(delButton);
 
-            tr.appendChild(tdTitle);
             tr.appendChild(tdTitleRus);
+            tr.appendChild(tdTitle);
             tr.appendChild(tdYear);
             tr.appendChild(tdAction);
 
@@ -57,6 +63,7 @@ function showModal() {
     const err = document.getElementById('description-error');
     if (err) {
         err.innerText = '';
+        err.style.display = 'none';
     }
     document.querySelector('div.modal').style.display = 'block';
 }
@@ -105,8 +112,16 @@ function sendFilm() {
         return resp.json();
     })
     .then(function(errors) {
-        if(errors.description)
-            document.getElementById('description-error').innerText = errors.description;
+        const err = document.getElementById('description-error');
+        if (!err) return;
+
+        if (errors.description) {
+            err.innerText = errors.description;
+            err.style.display = 'block';
+        } else {
+            err.innerText = '';
+            err.style.display = 'none';
+        }
     });
 }
 
