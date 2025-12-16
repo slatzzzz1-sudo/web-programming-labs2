@@ -61,7 +61,6 @@ films = [
     },
 ]
 
-
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
     return jsonify(films)
