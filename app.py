@@ -8,6 +8,7 @@ from lab3 import lab3
 from lab4 import lab4
 from lab5 import lab5
 from lab6 import lab6
+from lab7 import lab7
 
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ app.register_blueprint(lab3)
 app.register_blueprint(lab4)
 app.register_blueprint(lab5)
 app.register_blueprint(lab6)
+app.register_blueprint(lab7)
 
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY',
@@ -44,6 +46,7 @@ def index():
                     <li><a href="/lab4">Лабораторная работа 4</a></li>
                     <li><a href="/lab5">Лабораторная работа 5</a></li>
                     <li><a href="/lab6">Лабораторная работа 6</a></li>
+                    <li><a href="/lab7">Лабораторная работа 7</a></li>
                 </ul>
                 <hr>
                 <footer>
