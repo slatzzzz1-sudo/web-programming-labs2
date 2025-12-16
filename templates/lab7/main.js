@@ -1,5 +1,5 @@
 function fillFilmList() {
-    fetch('/lab7/rest-api/films/')
+    fetch(`/lab7/rest-api/films/`)
     .then(function (data) {
         return data.json();
     })
@@ -15,7 +15,7 @@ function fillFilmList() {
             let tdAction = document.createElement('td');
 
             tdTitle.innerHTML = films[i].title === films[i].title_ru ? '' : films[i].title;
-            tdTitleRus.innerHTML = films[i].title_rus;
+            tdTitleRus.innerHTML = films[i].title_ru;
             tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
@@ -47,5 +47,49 @@ function deleteFilm(id, title) {
     fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
     .then(function () {
         fillFilmList();
+    });
+}
+
+function showModal() {
+    document.querySelector('div.modal').style.display = 'block';
+}
+
+function hideModal() {
+    document.querySelector('div.modal').style.display = 'none';
+}
+
+function cancel() {
+    hideModal();
+}
+
+
+function addFilm() {
+    document.getElementById('id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title_ru').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('description').value = '';
+    showModal();
+}
+
+function sendFilm() {
+    const film = {
+        title: document.getElementById('title').value,
+        title_ru: document.getElementById('title_ru').value,
+        year: document.getElementById('year').value,
+        description: document.getElementById('description').value
+    }
+
+    const url = `/lab7/rest-api/films/`;
+    const method = 'PUT';
+
+    fetch(url, {
+        method: method,
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(film)
+    })
+    .then(function() {
+        fillFilmList();
+        hideModal();
     });
 }
