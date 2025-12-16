@@ -23,27 +23,50 @@
             const office_list = data.result;
             const ul = document.getElementById('office-list');
             ul.innerHTML = '';
+            
+            let totalCost = 0;
+            const login = '{{ session.get("login", "") }}'; // Получаем логин из сессии
+            
             for(let i = 0; i < office_list.length; i++) {
                 const office = office_list[i];
                 const li = document.createElement('li');
-                li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
+                
+                // Отображаем номер офиса, статус и стоимость
+                let status = office.tenant ? `арендован (${office.tenant})` : 'свободен';
+                li.innerText = `Офис ${office.number}: ${status} - ${office.price} руб.`;
+
     
-                // Кнопка бронирования
-                const bookingButton = document.createElement('button');
-                bookingButton.innerText = 'зарезервировать';
-                bookingButton.onclick = function() {booking(office.number)};
-                li.appendChild(bookingButton);
+                // Кнопка бронирования (только для свободных офисов)
+                if (!office.tenant) {
+                    const bookingButton = document.createElement('button');
+                    bookingButton.innerText = 'зарезервировать';
+                    bookingButton.onclick = function() {booking(office.number)};
+                    bookingButton.style.marginLeft = '10px';
+                    li.appendChild(bookingButton);
+                }
     
-                // Кнопка освобождения (только если офис арендован)
-                if (office.tenant) {
+                // Кнопка освобождения (только если офис арендован текущим пользователем)
+                if (office.tenant && office.tenant === login) {
                     const cancellationButton = document.createElement('button');
                     cancellationButton.innerText = 'освободить';
                     cancellationButton.onclick = function() {cancellation(office.number)};
                     cancellationButton.style.marginLeft = '10px';
                     li.appendChild(cancellationButton);
+                    
+                    // Добавляем к общей стоимости
+                    totalCost += office.price;
                 }    
 
                 ul.appendChild(li);
+            }
+            
+            // Отображаем общую стоимость
+            const totalElement = document.getElementById('total-cost');
+            if (totalCost > 0) {
+                totalElement.innerText = `Общая стоимость аренды: ${totalCost} руб.`;
+                totalElement.style.display = 'block';
+            } else {
+                totalElement.style.display = 'none';
             }
         });
     }
@@ -79,7 +102,6 @@
                 }
             }
             else {
-                document.getElementById('office-list').innerHTML = '';
                 getOfficeList();
             }
         });
@@ -120,7 +142,6 @@
                 }
             }
             else {
-                document.getElementById('office-list').innerHTML = '';
                 getOfficeList();
             }
         });
@@ -135,4 +156,5 @@
 {% block main %}
     <h1>Список кабинетов</h1>
     <ul id="office-list"></ul>
+    <div id="total-cost" style="margin-top: 20px; font-weight: bold; font-size: 18px;"></div>
 {% endblock %}
