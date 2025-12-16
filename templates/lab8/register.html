@@ -3,21 +3,123 @@
 {% block lab %}Лабораторная работа 8{% endblock %}
 
 {% block main %}
-    <h1>Регистрация</h1>
+<style>
+    .register-box {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #1a1a2e;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        border: 2px solid #2d2d4d;
+    }
+    
+    .register-title {
+        text-align: center;
+        color: #8a6dc9;
+        margin-bottom: 30px;
+        font-size: 1.8em;
+    }
+    
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .input-group label {
+        display: block;
+        color: #b8b8d1;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .register-input {
+        width: 100%;
+        padding: 12px;
+        background: #252547;
+        border: 2px solid #3a3a6a;
+        border-radius: 8px;
+        color: white;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+    
+    .register-input:focus {
+        outline: none;
+        border-color: #8a6dc9;
+        box-shadow: 0 0 10px rgba(138,109,201,0.3);
+    }
+    
+    .error-message {
+        background: #ff4444;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    .register-btn {
+        background: linear-gradient(135deg, #8a6dc9, #6d4cc3);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
+    }
+    
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(138,109,201,0.4);
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+        color: #8a7aa3;
+    }
+    
+    .login-link a {
+        color: #a991e8;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 
-    <form action="/lab8/register" method="post">
-        <div>
-            <label>
-                Логин: <input type="text" name="login">
-            </label>
+<div class="register-box">
+    <h1 class="register-title">Регистрация</h1>
+
+    <form class="register-form" action="/lab8/register" method="post">
+        <div class="input-group">
+            <label>Логин:</label>
+            <input class="register-input" type="text" name="login" required>
         </div>
 
-        <div>
-            <label>
-                Пароль: <input type="password" name="password">
-            </label>
+        <div class="input-group">
+            <label>Пароль:</label>
+            <input class="register-input" type="password" name="password" required>
         </div>
 
-        <button type="submit">Зарегистрироваться</button>
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <button class="register-btn" type="submit">Зарегистрироваться</button>
     </form>
+
+    <div class="login-link">
+        Уже есть аккаунт? <a href="/lab8/login">Войти</a>
+    </div>
+</div>
 {% endblock %}

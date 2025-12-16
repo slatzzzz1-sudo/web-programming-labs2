@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+<style>
+    .main-box {max-width:1000px;margin:40px auto;padding:30px;background:#1a1a2e;border-radius:20px;border:3px solid #2d2d4d;}
+    .main-title {text-align:center;color:#8a6dc9;margin-bottom:30px;}
+    .ka-block {background:linear-gradient(135deg,#252547,#3a3a6a);padding:25px;border-radius:15px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin:30px 0;border:2px solid #8a6dc9;}
+    .ka-block a {text-decoration:none;}
+    .ka-block button {width:100%;padding:14px;background:#8a6dc9;color:white;border:none;border-radius:10px;cursor:pointer;font-size:16px;transition:0.3s;}
+    .ka-block button:hover {background:#6d4cc3;transform:translateY(-3px);}
+    .user-info {grid-column:1/-1;text-align:center;color:#b8b8d1;font-size:18px;margin-top:10px;font-style:italic;}
+    .articles-title {color:#8a6dc9;margin:40px 0 20px;text-align:center;}
+    .articles-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+    .article-card {background:#252547;padding:20px;border-radius:12px;border-left:5px solid #8a6dc9;transition:0.3s;}
+    .article-card:hover {transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,0.3);}
+    .article-card h3 {color:white;margin:0 0 15px;font-size:1.3em;}
+    .article-card p {color:#b8b8d1;line-height:1.5;}
+    .article-meta {display:flex;align-items:center;gap:10px;margin-top:15px;flex-wrap:wrap;}
+    .badge {padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;}
+    .badge.favorite {background:#ffd700;color:#333;}
+    .badge.likes {background:#ff6b6b;color:white;}
+    .like-btn {background:#4CAF50;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;transition:0.3s;}
+    .like-btn:hover {background:#45a049;transform:scale(1.05);}
+    .empty-state {text-align:center;color:#8a7aa3;padding:40px;font-size:18px;}
+</style>
+
+<div class="main-box">
+    <h1 class="main-title">🔐 База знаний</h1>
+    
+    <div class="ka-block">
+        {% if login == 'Anonymous' %}
+            <a href="/lab8/login"><button>🔑 Вход</button></a>
+            <a href="/lab8/register"><button>📝 Регистрация</button></a>
+            <div class="user-info">👤 Anonymous</div>
+        {% else %}
+            <a href="/lab8/logout"><button>🚪 Выход</button></a>
+            <a href="/lab8/article"><button>📚 Мои статьи</button></a>
+            <a href="/lab8/article/create"><button>✍️ Создать</button></a>
+            <a href="/lab8/article/favorites"><button>⭐ Избранные</button></a>
+            <a href="/lab8/article/public"><button>🌐 Публичные</button></a>
+            <div class="user-info">👤 {{ login }}</div>
+        {% endif %}
+    </div>
+
+    {% if articles %}
+        <h2 class="articles-title">🔥 Популярные статьи</h2>
+        <div class="articles-grid">
+            {% for article in articles %}
+                <div class="article-card">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.article_text[:150] }}{% if article.article_text|length > 150 %}...{% endif %}</p>
+                    <div class="article-meta">
+                        {% if article.is_favorite %}
+                            <span class="badge favorite">★ Избранная</span>
+                        {% endif %}
+                        <span class="badge likes">❤️ {{ article.likes or 0 }}</span>
+                        {% if login != 'Anonymous' %}
+                            <form method="POST" action="/lab8/article/like/{{ article.id }}" style="display:inline;">
+                                <button type="submit" class="like-btn">👍 Лайк</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">📭 Пока нет публичных статей</div>
+    {% endif %}
+</div>
+{% endblock %}

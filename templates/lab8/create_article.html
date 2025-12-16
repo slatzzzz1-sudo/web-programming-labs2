@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+<style>
+    .create-box {max-width:800px;margin:40px auto;padding:30px;background:#1a1a2e;border-radius:20px;border:3px solid #2d2d4d;}
+    .create-title {color:#8a6dc9;text-align:center;margin-bottom:30px;}
+    .create-form {display:flex;flex-direction:column;gap:25px;}
+    .form-group {display:flex;flex-direction:column;gap:10px;}
+    .form-group label {color:#b8b8d1;font-weight:500;font-size:18px;}
+    .create-input {padding:14px;background:#252547;border:2px solid #3a3a6a;border-radius:10px;color:white;font-size:16px;}
+    .create-input:focus {outline:none;border-color:#8a6dc9;box-shadow:0 0 15px rgba(138,109,201,0.3);}
+    .create-textarea {min-height:350px;resize:vertical;font-family:inherit;}
+    .checkbox-group {display:flex;gap:20px;flex-wrap:wrap;margin:10px 0;}
+    .checkbox-item {display:flex;align-items:center;gap:12px;background:#252547;padding:18px;border-radius:10px;cursor:pointer;transition:0.3s;}
+    .checkbox-item:hover {background:#2a2a4a;}
+    .checkbox-item input[type="checkbox"] {width:22px;height:22px;accent-color:#8a6dc9;}
+    .error-msg {background:#ff4444;color:white;padding:15px;border-radius:10px;text-align:center;}
+    .submit-btn {background:linear-gradient(135deg,#8a6dc9,#6d4cc3);color:white;border:none;padding:18px;border-radius:12px;font-size:20px;cursor:pointer;transition:0.3s;margin-top:20px;font-weight:bold;}
+    .submit-btn:hover {background:linear-gradient(135deg,#6d4cc3,#8a6dc9);transform:translateY(-3px);box-shadow:0 10px 25px rgba(138,109,201,0.4);}
+    .char-count {color:#8a7aa3;font-size:14px;text-align:right;margin-top:5px;}
+</style>
+
+<div class="create-box">
+    <h1 class="create-title">✍️ Создание статьи</h1>
+    
+    <form class="create-form" method="POST" action="/lab8/article/create">
+        <div class="form-group">
+            <label>📝 Название статьи:</label>
+            <input class="create-input" type="text" id="title" name="title" maxlength="50" required
+                   oninput="updateCharCount('title', 50)">
+            <div class="char-count" id="title-count">0/50</div>
+        </div>
+        
+        <div class="form-group">
+            <label>📄 Текст статьи:</label>
+            <textarea class="create-input create-textarea" name="article_text" id="article_text" required></textarea>
+        </div>
+        
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" id="is_favorite" name="is_favorite">
+                <label for="is_favorite">⭐ Добавить в избранное</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="is_public" name="is_public">
+                <label for="is_public">🌐 Сделать статью публичной</label>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error-msg">{{ error }}</div>
+        {% endif %}
+        
+        <button class="submit-btn" type="submit">🚀 Опубликовать статью</button>
+    </form>
+</div>
+
+<script>
+    function updateCharCount(inputId, maxLength) {
+        const input = document.getElementById(inputId);
+        const count = document.getElementById(inputId + '-count');
+        const currentLength = input.value.length;
+        count.textContent = `${currentLength}/${maxLength}`;
+        count.style.color = currentLength > maxLength * 0.8 ? '#ff6b6b' : '#8a7aa3';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCharCount('title', 50);
+    });
+</script>
+{% endblock %}
