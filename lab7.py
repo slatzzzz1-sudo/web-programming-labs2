@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, abort
 
 lab7 = Blueprint('lab7', __name__)
 
 @lab7.route('/lab7/')
 def main():
     return render_template('lab7/index.html')
-
 
 films = [
     {
@@ -40,6 +39,26 @@ films = [
         неравенстве, которая мастерски сочетает черную комедию, триллер и драму, \
         став первым неанглоязычным фильмом, получившим «Оскар» за лучший фильм.'
     },
+    {
+        'title': 'Pulp Fiction',
+        'title_ru': 'Криминальное чтиво',
+        'year': 1994,
+        'description': 'Несколько переплетающихся историй о бандитах, \
+        боксере, гангстерах и их неожиданных приключениях в Лос-Анджелесе. \
+        Фильм с нелинейным повествованием, запоминающимися диалогами и \
+        культовыми сценами, переопределивший независимое кино 1990-х и \
+        ставший визитной карточкой Квентина Тарантино.'
+    },
+    {
+        'title': 'The Dark Knight',
+        'title_ru': 'Темный рыцарь',
+        'year': 2008,
+        'description': 'Бэтмен, комиссар Гордон и прокурор Харви Дент \
+        объединяются против криминала Готэма, но их планы нарушает \
+        хаотичный и непредсказуемый Джокер. Фильм поднимает вопросы \
+        морали, жертвенности и природы героизма, с культовой ролью \
+        Хита Леджера в роли антагониста.'
+    },
 ]
 
 
@@ -50,33 +69,29 @@ def get_films():
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    if id <= len(films) - 1:
+    if 0 <= id < len(films):
         return films[id]
     else:
-        return None
-    
-
-
-
-
-
-
-
-
-
+        abort(404)
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    del films[id]
-    return '', 204
+    if 0 <= id < len(films):
+        del films[id]
+        return '', 204
+    else:
+        abort(404)
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    film = request.get_json()
-    films[id] = film
-    return films[id]
+    if 0 <= id < len(films):
+        film = request.get_json()
+        films[id] = film
+        return films[id], 200
+    else:
+        abort(404)
 
 
 @lab7.route('/lab7/rest-api/films/', methods=['PUT'])
