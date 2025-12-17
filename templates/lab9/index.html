@@ -1,0 +1,530 @@
+{% block lab %}Лабораторная работа 9 - Новогодние подарки{% endblock %}
+
+{% block main %}
+<div class="new-year-container">
+    <h1>🎄 Новогодние Подарки 🎁</h1>
+    
+    <div class="info-panel">
+        <div class="info-card">
+            <span class="info-label">Осталось подарков:</span>
+            <span class="info-value">{{ opened_left }}/10</span>
+        </div>
+        <div class="info-card">
+            <span class="info-label">Ваши открытые:</span>
+            <span class="info-value" id="my-opened">0/3</span>
+        </div>
+        
+        {% if user.is_authenticated %}
+        <button id="reset-btn" class="reset-button">🔄 Сбросить все</button>
+        {% endif %}
+    </div>
+    
+    <div class="instructions">
+        <p>✨ Нажмите на любую коробку, чтобы получить подарок и поздравление!</p>
+        <p>🎅 Вы можете открыть только 3 коробки</p>
+    </div>
+    
+    <div class="gift-boxes-container" id="boxes-container">
+        {% for box in boxes %}
+        <div class="gift-box-wrapper" 
+             style="position: absolute; 
+                    left: {{ box.position_x }}px; 
+                    top: {{ box.position_y }}px;"
+             data-id="{{ box.id }}">
+            
+            {% if box.is_opened %}
+            <div class="gift-box opened" title="Коробка {{ box.id }} (пустая)">
+                <div class="box-number">{{ box.id }}</div>
+                <div class="empty-label">Пусто</div>
+            </div>
+            {% else %}
+            <div class="gift-box closed" title="Коробка {{ box.id }}">
+                <div class="box-number">{{ box.id }}</div>
+                <div class="ribbon">🎀</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="snowflakes">
+        {% for i in range(50) %}
+        <div class="snowflake">❄️</div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно для подарка -->
+<div id="gift-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">🎁 Поздравление!</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <div id="gift-image" class="gift-image"></div>
+            <p id="congrat-text" class="congrat-text"></p>
+            <p class="hint">Эта коробка теперь пуста</p>
+        </div>
+        
+        <div class="modal-footer">
+            <button id="close-gift-btn" class="modal-btn">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для ошибок -->
+<div id="error-modal" class="modal error-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚠️ Внимание</h2>
+            <span class="close-error-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="error-message"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="close-error-btn" class="modal-btn">OK</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.new-year-container {
+    background: linear-gradient(135deg, #1a2980, #26d0ce);
+    min-height: 100vh;
+    color: white;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.info-panel {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    min-width: 180px;
+}
+
+.info-label {
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 5px;
+}
+
+.info-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.reset-button {
+    background: linear-gradient(45deg, #FF416C, #FF4B2B);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.3s;
+}
+
+.reset-button:hover {
+    transform: translateY(-2px);
+}
+
+.instructions {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+    font-size: 16px;
+}
+
+.gift-boxes-container {
+    position: relative;
+    height: 600px;
+    margin: 40px 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.gift-box {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gift-box.closed {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    border: 3px solid #8B4513;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.gift-box.opened {
+    background: linear-gradient(45deg, #808080, #A9A9A9);
+    border: 3px solid #696969;
+    border-radius: 10px;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.gift-box:hover:not(.opened) {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+}
+
+.box-number {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.ribbon {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+}
+
+.empty-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Снежинки */
+.snowflakes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.snowflake {
+    position: absolute;
+    color: white;
+    font-size: 20px;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+    }
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    animation: modalAppear 0.3s ease;
+    border: 5px solid #8B4513;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #8B4513;
+}
+
+.close-modal, .close-error-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #8B4513;
+    transition: color 0.3s;
+}
+
+.close-modal:hover, .close-error-modal:hover {
+    color: #FF0000;
+}
+
+.gift-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    border: 3px solid #8B4513;
+}
+
+.congrat-text {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #8B4513;
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.hint {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.modal-btn {
+    background: #8B4513;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.modal-btn:hover {
+    background: #A0522D;
+}
+
+.error-modal .modal-content {
+    background: linear-gradient(135deg, #FF416C, #FF4B2B);
+    border-color: #8B0000;
+}
+
+.error-modal .modal-header {
+    color: #8B0000;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const giftModal = document.getElementById('gift-modal');
+    const errorModal = document.getElementById('error-modal');
+    const closeModalBtns = document.querySelectorAll('.close-modal, .close-error-modal, .modal-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const myOpenedElement = document.getElementById('my-opened');
+    
+    // Загружаем информацию об открытых коробках пользователя
+    loadMyBoxes();
+    
+    // Обработка клика по коробке
+    document.querySelectorAll('.gift-box.closed').forEach(box => {
+        box.addEventListener('click', function() {
+            const boxId = this.closest('.gift-box-wrapper').getAttribute('data-id');
+            
+            fetch(`/lab9/open/${boxId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Показываем подарок
+                    document.getElementById('modal-title').textContent = `🎁 Подарок из коробки ${data.box_id}`;
+                    document.getElementById('congrat-text').textContent = data.text;
+                    
+                    // Показываем картинку подарка (вместо картинки используем эмодзи)
+                    const giftImage = document.getElementById('gift-image');
+                    giftImage.innerHTML = getGiftEmoji(data.box_id);
+                    
+                    giftModal.style.display = 'flex';
+                    
+                    // Обновляем интерфейс
+                    updateBoxUI(boxId);
+                    loadMyBoxes();
+                    
+                } else if (data.status === 'limit_reached') {
+                    showError('Вы уже открыли максимальное количество коробок (3)!');
+                } else if (data.status === 'already_opened') {
+                    showError('Вы уже открывали эту коробку!');
+                } else if (data.status === 'empty') {
+                    showError('Эта коробка уже пуста!');
+                }
+            })
+            .catch(error => {
+                showError('Произошла ошибка при открытии коробки');
+            });
+        });
+    });
+    
+    // Функция для обновления внешнего вида коробки
+    function updateBoxUI(boxId) {
+        const boxWrapper = document.querySelector(`.gift-box-wrapper[data-id="${boxId}"]`);
+        if (boxWrapper) {
+            const box = boxWrapper.querySelector('.gift-box');
+            box.classList.remove('closed');
+            box.classList.add('opened');
+            box.innerHTML = `
+                <div class="box-number">${boxId}</div>
+                <div class="empty-label">Пусто</div>
+            `;
+            box.style.cursor = 'not-allowed';
+            box.removeAttribute('title');
+            box.setAttribute('title', `Коробка ${boxId} (пустая)`);
+        }
+        
+        // Обновляем счетчик оставшихся подарков
+        const remaining = document.querySelector('.info-value');
+        const current = parseInt(remaining.textContent.split('/')[0]);
+        if (current > 0) {
+            remaining.textContent = `${current - 1}/10`;
+        }
+    }
+    
+    // Функция для загрузки открытых коробок пользователя
+    function loadMyBoxes() {
+        fetch('/lab9/my_boxes')
+            .then(response => response.json())
+            .then(data => {
+                myOpenedElement.textContent = `${data.count}/3`;
+            });
+    }
+    
+    // Функция для показа ошибок
+    function showError(message) {
+        document.getElementById('error-message').textContent = message;
+        errorModal.style.display = 'flex';
+    }
+    
+    // Функция для получения эмодзи подарка по ID
+    function getGiftEmoji(boxId) {
+        const gifts = ['🎁', '🎄', '⭐', '🎅', '🤶', '🦌', '❄️', '☃️', '🎊', '🎉'];
+        return gifts[(boxId - 1) % gifts.length];
+    }
+    
+    // Закрытие модальных окон
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            giftModal.style.display = 'none';
+            errorModal.style.display = 'none';
+            location.reload(); // Перезагружаем для обновления состояния
+        });
+    });
+    
+    // Закрытие по клику вне окна
+    [giftModal, errorModal].forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                location.reload();
+            }
+        });
+    });
+    
+    // Сброс всех коробок
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Вы уверены, что хотите сбросить все коробки? Все подарки будут возвращены.')) {
+                fetch('/lab9/reset_all', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'reset') {
+                        alert('Все коробки сброшены!');
+                        location.reload();
+                    }
+                });
+            }
+        });
+    }
+    
+    // Создаем снежинки
+    function createSnowflakes() {
+        const snowflakesContainer = document.querySelector('.snowflakes');
+        for (let i = 0; i < 50; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄️';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+            snowflake.style.fontSize = Math.random() * 10 + 15 + 'px';
+            snowflakesContainer.appendChild(snowflake);
+        }
+    }
+    
+    createSnowflakes();
+});
+</script>
+{% endblock %}
